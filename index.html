@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblia Reina Valera</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <header>
+            <h1>Biblia Reina Valera</h1>
+            <div class="search-bar">
+                <i class="material-icons">search</i>
+                <input type="text" placeholder="Buscar en la Biblia...">
+            </div>
+        </header>
+        
+        <nav class="book-nav">
+            <button class="active">Génesis</button>
+            <button>Éxodo</button>
+            <button>Levítico</button>
+            <!-- Se añadirán dinámicamente -->
+        </nav>
+
+        <main>
+            <div class="chapter-content">
+                <h2>Génesis 1</h2>
+                <div class="verses">
+                    <p><span class="verse-number">1</span> En el principio creó Dios los cielos y la tierra.</p>
+                    <p><span class="verse-number">2</span> Y la tierra estaba desordenada y vacía, y las tinieblas estaban sobre la faz del abismo, y el Espíritu de Dios se movía sobre la faz de las aguas.</p>
+                    <!-- Se añadirán dinámicamente -->
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <button class="nav-button"><i class="material-icons">menu_book</i>Libros</button>
+            <button class="nav-button"><i class="material-icons">bookmark</i>Marcadores</button>
+            <button class="nav-button"><i class="material-icons">settings</i>Ajustes</button>
+        </nav>
+    </div>
+    <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
