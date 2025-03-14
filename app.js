@@ -1,37 +1,90 @@
-let bible = null;
-let currentBook = 'Génesis';
-let currentChapter = 1;
-
-// Organización de los libros
+// Estructura de la Biblia
 const bibleStructure = {
     antiguoTestamento: [
-        "Génesis", "Éxodo", "Levítico", "Números", "Deuteronomio", "Josué", "Jueces", "Rut",
-        "1 Samuel", "2 Samuel", "1 Reyes", "2 Reyes", "1 Crónicas", "2 Crónicas", "Esdras",
-        "Nehemías", "Ester", "Job", "Salmos", "Proverbios", "Eclesiastés", "Cantares",
-        "Isaías", "Jeremías", "Lamentaciones", "Ezequiel", "Daniel", "Oseas", "Joel",
-        "Amós", "Abdías", "Jonás", "Miqueas", "Nahúm", "Habacuc", "Sofonías", "Hageo",
-        "Zacarías", "Malaquías"
+        'Génesis', 'Éxodo', 'Levítico', 'Números', 'Deuteronomio',
+        'Josué', 'Jueces', 'Rut', '1 Samuel', '2 Samuel',
+        '1 Reyes', '2 Reyes', '1 Crónicas', '2 Crónicas', 'Esdras',
+        'Nehemías', 'Ester', 'Job', 'Salmos', 'Proverbios',
+        'Eclesiastés', 'Cantares', 'Isaías', 'Jeremías', 'Lamentaciones',
+        'Ezequiel', 'Daniel', 'Oseas', 'Joel', 'Amós',
+        'Abdías', 'Jonás', 'Miqueas', 'Nahúm', 'Habacuc',
+        'Sofonías', 'Hageo', 'Zacarías', 'Malaquías'
     ],
     nuevoTestamento: [
-        "Mateo", "Marcos", "Lucas", "Juan", "Hechos", "Romanos", "1 Corintios",
-        "2 Corintios", "Gálatas", "Efesios", "Filipenses", "Colosenses", "1 Tesalonicenses",
-        "2 Tesalonicenses", "1 Timoteo", "2 Timoteo", "Tito", "Filemón", "Hebreos",
-        "Santiago", "1 Pedro", "2 Pedro", "1 Juan", "2 Juan", "3 Juan", "Judas", "Apocalipsis"
+        'Mateo', 'Marcos', 'Lucas', 'Juan', 'Hechos',
+        'Romanos', '1 Corintios', '2 Corintios', 'Gálatas', 'Efesios',
+        'Filipenses', 'Colosenses', '1 Tesalonicenses', '2 Tesalonicenses', '1 Timoteo',
+        '2 Timoteo', 'Tito', 'Filemón', 'Hebreos', 'Santiago',
+        '1 Pedro', '2 Pedro', '1 Juan', '2 Juan', '3 Juan',
+        'Judas', 'Apocalipsis'
     ]
 };
 
-// Almacenamiento local para favoritos
-let favorites = JSON.parse(localStorage.getItem('bibleFavorites')) || [];
+// Variables globales
+let bible = null;
+let currentBook = 'Génesis';
+let currentChapter = 1;
+let favorites = JSON.parse(localStorage.getItem('bibleFavorites') || '[]');
+let searchIndex = {};
 
 // Cargar la Biblia
 async function loadBible() {
     try {
         const response = await fetch('bible-data.json');
-        bible = await response.json();
-        initializeApp();
+        if (!response.ok) {
+            throw new Error('Error al cargar la Biblia');
+        }
+        const data = await response.json();
+        
+        // Normalizar nombres de libros
+        bible = {};
+        for (const [book, chapters] of Object.entries(data)) {
+            const normalizedBook = normalizeBookName(book);
+            bible[normalizedBook] = chapters;
+        }
+        
+        // Inicializar búsqueda
+        initializeSearch();
+        
+        // Mostrar página principal
+        showHomePage();
     } catch (error) {
-        console.error('Error cargando la Biblia:', error);
+        console.error('Error al cargar la Biblia:', error);
+        document.querySelector('.chapter-content').innerHTML = `
+            <div class="error-message">
+                <p>Error al cargar la Biblia. Por favor, intenta recargar la página.</p>
+                <button onclick="window.location.reload()" class="retry-button">
+                    <i class="material-icons">refresh</i>
+                    Recargar página
+                </button>
+            </div>
+        `;
     }
+}
+
+// Normalizar nombres de libros
+function normalizeBookName(book) {
+    const normalizations = {
+        'Genesis': 'Génesis',
+        'Exodo': 'Éxodo',
+        'Levitico': 'Levítico',
+        'Numeros': 'Números',
+        'Josue': 'Josué',
+        'Nehemias': 'Nehemías',
+        'Eclesiastes': 'Eclesiastés',
+        'Isaias': 'Isaías',
+        'Jeremias': 'Jeremías',
+        'Amos': 'Amós',
+        'Abdias': 'Abdías',
+        'Jonas': 'Jonás',
+        'Nahum': 'Nahúm',
+        'Sofonias': 'Sofonías',
+        'Zacarias': 'Zacarías',
+        'Malaquias': 'Malaquías',
+        'Galatas': 'Gálatas',
+        'Filemon': 'Filemón'
+    };
+    return normalizations[book] || book;
 }
 
 // Inicializar la aplicación
