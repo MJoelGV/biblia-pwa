@@ -114,36 +114,60 @@ header {
     margin: 1.5rem 0;
 }
 
+.verses {
+    padding: 0;
+    background: var(--card-background);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
 .verse-container {
     position: relative;
     display: flex;
     align-items: flex-start;
-    padding: 0.5rem;
-    margin: 0.25rem 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease;
+    padding: 8px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
 .verse-number {
     flex-shrink: 0;
-    min-width: 1.5rem;
-    margin-right: 0.5rem;
+    min-width: 24px;
     color: var(--primary-color);
     font-weight: bold;
+    font-size: 0.9rem;
 }
 
 .verse-text {
     flex-grow: 1;
-    line-height: 1.4;
+    line-height: 1.3;
     margin: 0;
+    padding-left: 8px;
 }
 
 .verse-actions {
     display: flex;
-    gap: 0.25rem;
-    margin-left: 0.5rem;
+    gap: 4px;
+    margin-left: 8px;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.2s ease;
+}
+
+.verse-actions button {
+    padding: 4px;
+    border: none;
+    background: none;
+    color: #666;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.verse-actions button:hover {
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.verse-container:last-child {
+    border-bottom: none;
 }
 
 .verse-container:hover {
@@ -152,14 +176,6 @@ header {
 
 .verse-container:hover .verse-actions {
     opacity: 1;
-}
-
-.verses {
-    padding: 0.5rem;
-    background: var(--card-background);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin: 1rem 0;
 }
 
 .favorite-button.active {
