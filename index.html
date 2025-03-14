@@ -14,39 +14,61 @@
             <h1>Biblia Reina Valera</h1>
             <div class="search-bar">
                 <i class="material-icons">search</i>
-                <input type="text" placeholder="Buscar en la Biblia...">
+                <input type="text" placeholder="Buscar en la Biblia..." oninput="searchBible(this.value)">
             </div>
         </header>
-        
-        <nav class="book-nav">
-            <button class="active">Génesis</button>
-            <button>Éxodo</button>
-            <button>Levítico</button>
-            <!-- Se añadirán dinámicamente -->
-        </nav>
 
         <main>
             <div class="chapter-content">
-                <h2>Génesis 1</h2>
-                <div class="verses">
-                    <p><span class="verse-number">1</span> En el principio creó Dios los cielos y la tierra.</p>
-                    <p><span class="verse-number">2</span> Y la tierra estaba desordenada y vacía, y las tinieblas estaban sobre la faz del abismo, y el Espíritu de Dios se movía sobre la faz de las aguas.</p>
-                    <!-- Se añadirán dinámicamente -->
-                </div>
+                <!-- El contenido se cargará dinámicamente -->
             </div>
         </main>
 
         <nav class="bottom-nav">
-            <button class="nav-button"><i class="material-icons">menu_book</i>Libros</button>
-            <button class="nav-button"><i class="material-icons">bookmark</i>Marcadores</button>
-            <button class="nav-button"><i class="material-icons">settings</i>Ajustes</button>
+            <button onclick="showHomePage()" class="nav-button">
+                <i class="material-icons">home</i>
+                <span>Inicio</span>
+            </button>
+            <button onclick="showFavorites()" class="nav-button">
+                <i class="material-icons">star</i>
+                <span>Favoritos</span>
+            </button>
+            <button onclick="toggleDarkMode()" class="nav-button">
+                <i class="material-icons">brightness_4</i>
+                <span>Modo</span>
+            </button>
         </nav>
     </div>
+
     <script src="app.js"></script>
     <script>
+        // Registrar el Service Worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => console.log('Service Worker registrado'))
+                .catch(error => console.log('Error al registrar el Service Worker:', error));
         }
+
+        // Función para alternar el modo oscuro
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // Cargar preferencia de modo oscuro
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+
+        // Cargar la Biblia al inicio
+        window.addEventListener('load', () => {
+            fetch('bible-data.json')
+                .then(response => response.json())
+                .then(data => {
+                    window.bible = data;
+                    showHomePage();
+                });
+        });
     </script>
 </body>
 </html>
