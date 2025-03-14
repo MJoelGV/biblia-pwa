@@ -114,31 +114,52 @@ header {
     margin: 1.5rem 0;
 }
 
+.verse-container {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.verse-number {
+    flex-shrink: 0;
+    min-width: 1.5rem;
+    margin-right: 0.5rem;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.verse-text {
+    flex-grow: 1;
+    line-height: 1.4;
+    margin: 0;
+}
+
 .verse-actions {
-    display: inline-flex;
-    gap: 0.5rem;
-    margin-left: 1rem;
+    display: flex;
+    gap: 0.25rem;
+    margin-left: 0.5rem;
     opacity: 0;
     transition: opacity 0.3s ease;
 }
 
-.verses p:hover .verse-actions {
+.verse-container:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.verse-container:hover .verse-actions {
     opacity: 1;
 }
 
-.verse-actions button {
-    border: none;
-    background: none;
-    padding: 0.3rem;
-    cursor: pointer;
-    color: #666;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-}
-
-.verse-actions button:hover {
-    background: var(--primary-light);
-    color: var(--primary-dark);
+.verses {
+    padding: 0.5rem;
+    background: var(--card-background);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 1rem 0;
 }
 
 .favorite-button.active {
@@ -226,26 +247,6 @@ main {
     text-align: center;
     padding-bottom: 1rem;
     border-bottom: 2px solid rgba(76, 175, 80, 0.2);
-}
-
-.verses p {
-    margin-bottom: 1.5rem;
-    padding: 0.8rem;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-    line-height: 1.8;
-    font-size: 1.1rem;
-}
-
-.verses p:hover {
-    background-color: rgba(76, 175, 80, 0.1);
-}
-
-.verse-number {
-    color: var(--primary-color);
-    font-weight: bold;
-    margin-right: 0.5rem;
-    font-size: 0.9rem;
 }
 
 .bottom-nav {
