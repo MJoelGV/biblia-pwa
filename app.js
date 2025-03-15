@@ -4,9 +4,7 @@ let currentBook = 'Proverbios';
 let currentChapter = 1;
 let favorites = JSON.parse(localStorage.getItem('bibleFavorites') || '[]');
 let searchIndex = {};
-
-// Estructura de la Biblia
-const bibleStructure = {
+let bibleStructure = {
     antiguoTestamento: [
         'Génesis', 'Éxodo', 'Levítico', 'Números', 'Deuteronomio',
         'Josué', 'Jueces', 'Rut', '1 Samuel', '2 Samuel',
@@ -33,6 +31,8 @@ async function initializeApp() {
     await loadBible();
     showProverbOfDay();
     setupSearch();
+    loadDarkModePreference();
+    loadFavorites();
 }
 
 // Cargar la Biblia
@@ -186,6 +186,9 @@ function showChapter() {
                 <div class="verse-container">
                     <span class="verse-number">${index + 1}</span>
                     <span class="verse-text">${verse}</span>
+                    <button onclick="addToFavorites(${index + 1}, '${verse.replace(/'/g, "\\'")}')" class="favorite-button">
+                        <i class="material-icons">favorite_border</i>
+                    </button>
                 </div>
             `).join('')}
         </div>
@@ -344,6 +347,116 @@ function changeChapter(delta) {
         currentChapter = newChapter;
         showChapter();
     }
+}
+
+// Cargar favoritos al inicio
+function loadFavorites() {
+    const savedFavorites = localStorage.getItem('bibleFavorites');
+    if (savedFavorites) {
+        favorites = JSON.parse(savedFavorites);
+    }
+}
+
+// Guardar favoritos
+function saveFavorites() {
+    localStorage.setItem('bibleFavorites', JSON.stringify(favorites));
+}
+
+// Alternar modo oscuro
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDarkMode);
+    
+    // Actualizar el ícono del botón
+    const darkModeIcon = document.querySelector('button[onclick="toggleDarkMode()"] i');
+    darkModeIcon.textContent = isDarkMode ? 'light_mode' : 'dark_mode';
+}
+
+// Cargar preferencia de modo oscuro
+function loadDarkModePreference() {
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        const darkModeIcon = document.querySelector('button[onclick="toggleDarkMode()"] i');
+        if (darkModeIcon) {
+            darkModeIcon.textContent = 'light_mode';
+        }
+    }
+}
+
+// Alternar favoritos
+function toggleFavorites() {
+    const homePage = document.getElementById('home-page');
+    const chapterPage = document.getElementById('chapter-page');
+    const favoritesPage = document.getElementById('favorites-page');
+    
+    if (favoritesPage.style.display === 'none') {
+        homePage.style.display = 'none';
+        chapterPage.style.display = 'none';
+        favoritesPage.style.display = 'block';
+        displayFavorites();
+    } else {
+        favoritesPage.style.display = 'none';
+        homePage.style.display = 'block';
+    }
+}
+
+// Mostrar favoritos
+function displayFavorites() {
+    const favoritesList = document.querySelector('.favorites-list');
+    favoritesList.innerHTML = favorites.length > 0 
+        ? favorites.map(fav => `
+            <div class="favorite-verse">
+                <div class="reference">${fav.book} ${fav.chapter}:${fav.verse}</div>
+                <div class="text">${fav.text}</div>
+                <button onclick="removeFavorite('${fav.id}')" class="remove-favorite">
+                    <i class="material-icons">delete</i>
+                </button>
+            </div>
+        `).join('')
+        : '<p>No tienes versículos favoritos guardados.</p>';
+}
+
+// Agregar a favoritos
+function addToFavorites(verseNumber, verseText) {
+    const favorite = {
+        id: Date.now().toString(),
+        book: currentBook,
+        chapter: currentChapter,
+        verse: verseNumber,
+        text: verseText
+    };
+    
+    favorites.push(favorite);
+    saveFavorites();
+    showToast('Versículo agregado a favoritos');
+}
+
+// Eliminar de favoritos
+function removeFavorite(id) {
+    favorites = favorites.filter(fav => fav.id !== id);
+    saveFavorites();
+    displayFavorites();
+    showToast('Versículo eliminado de favoritos');
+}
+
+// Mostrar mensaje toast
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 300);
+        }, 2000);
+    }, 100);
 }
 
 // Inicializar la aplicación

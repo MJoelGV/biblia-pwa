@@ -24,12 +24,20 @@
             <header>
                 <h1>Biblia Reina Valera</h1>
                 <div class="top-nav">
-                    <button onclick="toggleSearch()" class="search-button">
+                    <button onclick="showHomePage()" class="nav-button" title="Inicio">
+                        <i class="material-icons">home</i>
+                    </button>
+                    <button onclick="toggleFavorites()" class="nav-button" title="Favoritos">
+                        <i class="material-icons">favorite</i>
+                    </button>
+                    <button onclick="toggleDarkMode()" class="nav-button" title="Modo Oscuro">
+                        <i class="material-icons">dark_mode</i>
+                    </button>
+                    <button onclick="toggleSearch()" class="search-button" title="Buscar">
                         <i class="material-icons">search</i>
                     </button>
                 </div>
                 <div class="search-bar" style="display: none;">
-                    <i class="material-icons">search</i>
                     <input type="text" placeholder="Buscar en la Biblia...">
                 </div>
             </header>
@@ -57,22 +65,12 @@
                     <h2 class="chapter-title"></h2>
                     <div class="chapter-content"></div>
                 </div>
-            </main>
 
-            <nav class="bottom-nav">
-                <button onclick="showHomePage()">
-                    <i class="material-icons">home</i>
-                    <span>Inicio</span>
-                </button>
-                <button onclick="showFavorites()">
-                    <i class="material-icons">favorite</i>
-                    <span>Favoritos</span>
-                </button>
-                <button onclick="toggleDarkMode()">
-                    <i class="material-icons">dark_mode</i>
-                    <span>Modo</span>
-                </button>
-            </nav>
+                <div id="favorites-page" style="display: none;">
+                    <h2>Mis Versículos Favoritos</h2>
+                    <div class="favorites-list"></div>
+                </div>
+            </main>
         </div>
     </div>
 

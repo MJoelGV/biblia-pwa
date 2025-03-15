@@ -83,44 +83,59 @@ header h1 {
 .top-nav {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+    gap: 0.5rem;
     padding: 0.5rem;
+    background: var(--background-color);
 }
 
+.nav-button,
 .search-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 0.75rem;
     border: none;
-    border-radius: 6px;
-    background: var(--primary-color);
-    color: white;
+    border-radius: 50%;
+    background: var(--card-background);
+    color: var(--text-color);
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
 }
 
+.nav-button:hover,
 .search-button:hover {
-    background: var(--primary-dark);
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.nav-button i,
+.search-button i {
+    font-size: 1.2rem;
 }
 
 .search-bar {
-    margin: 1rem;
-    padding: 0.5rem 1rem;
-    background: var(--card-background);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0 1rem;
 }
 
 .search-bar input {
-    flex: 1;
-    border: none;
-    background: transparent;
-    padding: 0.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--card-background);
     color: var(--text-color);
     font-size: 1rem;
 }
 
 .search-bar input:focus {
     outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 
 .proverb-page {
@@ -310,35 +325,36 @@ header h1 {
 }
 
 .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--card-background);
-    display: flex;
-    justify-content: space-around;
-    padding: 0.5rem;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    display: none;
 }
 
-.bottom-nav button {
+.favorites-page {
+    padding: 1rem;
+}
+
+.favorites-list {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: 8px;
-    border: none;
-    background: none;
-    color: #666;
-    cursor: pointer;
+    gap: 1rem;
+    padding: 1rem;
 }
 
-.bottom-nav button i {
-    font-size: 24px;
+.favorite-verse {
+    background: var(--card-background);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.bottom-nav button span {
-    font-size: 12px;
+.favorite-verse .reference {
+    color: var(--primary-color);
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.favorite-verse .text {
+    color: var(--text-color);
+    line-height: 1.5;
 }
 
 main {
