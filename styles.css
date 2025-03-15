@@ -20,6 +20,13 @@ body {
     background-color: var(--background-color);
 }
 
+body.dark-mode {
+    --background-color: #1a1a1a;
+    --card-background: #2d2d2d;
+    --text-color: #ffffff;
+    --border-color: #404040;
+}
+
 .app {
     max-width: 100%;
     margin: 0 auto;
@@ -615,8 +622,12 @@ main {
 
 .add-note {
     padding: 1rem;
-    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
     background: var(--card-background);
+}
+
+.add-note .note-actions {
+    margin-bottom: 1rem;
 }
 
 .add-note textarea {
@@ -629,18 +640,12 @@ main {
     color: var(--text-color);
     font-size: 1rem;
     resize: vertical;
-    margin-bottom: 1rem;
 }
 
 .add-note textarea:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
-}
-
-.note-actions {
-    display: flex;
-    justify-content: flex-end;
 }
 
 .save-note {
@@ -654,15 +659,44 @@ main {
     color: white;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: 0.9rem;
 }
 
 .save-note:hover {
     background: var(--primary-dark);
 }
 
-/* Ocultar mensaje de favoritos vacíos en la página principal */
-#chapter-page .favorites-empty {
-    display: none;
+.save-note i {
+    font-size: 1.2rem;
+}
+
+/* Tema oscuro */
+body.dark-mode {
+    --background-color: #1a1a1a;
+    --card-background: #2d2d2d;
+    --text-color: #ffffff;
+    --border-color: #404040;
+}
+
+.search-bar {
+    background: #2d2d2d;
+}
+
+.search-bar input {
+    background: #2d2d2d;
+    color: white;
+}
+
+.verses p:hover {
+    background-color: #2d2d2d;
+}
+
+.search-result {
+    border-color: #333;
+}
+
+.search-result:hover {
+    background-color: #2d2d2d;
 }
 
 @media (max-width: 600px) {
@@ -709,35 +743,5 @@ main {
     .chapter-navigation button {
         padding: 0.4rem 0.8rem;
         font-size: 0.9rem;
-    }
-}
-
-/* Estilos para el modo oscuro (se implementará después) */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --text-color: #fff;
-        --background-color: #121212;
-        --card-background: #1e1e1e;
-    }
-
-    .search-bar {
-        background: #2d2d2d;
-    }
-
-    .search-bar input {
-        background: #2d2d2d;
-        color: white;
-    }
-
-    .verses p:hover {
-        background-color: #2d2d2d;
-    }
-
-    .search-result {
-        border-color: #333;
-    }
-
-    .search-result:hover {
-        background-color: #2d2d2d;
     }
 }

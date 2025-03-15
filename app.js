@@ -5,6 +5,7 @@ let currentChapter = 1;
 let favorites = [];
 let notes = [];
 let searchIndex = {};
+let isDarkMode = false;
 let bibleStructure = {
     antiguoTestamento: [
         'Génesis', 'Éxodo', 'Levítico', 'Números', 'Deuteronomio',
@@ -367,23 +368,28 @@ function loadSavedData() {
     }
     
     const savedDarkMode = localStorage.getItem('darkMode');
-    if (savedDarkMode) {
-        const isDarkMode = JSON.parse(savedDarkMode);
+    if (savedDarkMode !== null) {
+        isDarkMode = JSON.parse(savedDarkMode);
         if (isDarkMode) {
             document.body.classList.add('dark-mode');
+            const darkModeIcon = document.querySelector('button[onclick="toggleDarkMode()"] i');
+            if (darkModeIcon) {
+                darkModeIcon.textContent = 'light_mode';
+            }
         }
     }
 }
 
 // Alternar modo oscuro
 function toggleDarkMode() {
+    isDarkMode = !isDarkMode;
     document.body.classList.toggle('dark-mode');
-    const isDarkMode = document.body.classList.contains('dark-mode');
     localStorage.setItem('darkMode', isDarkMode);
     
-    // Actualizar el ícono del botón
     const darkModeIcon = document.querySelector('button[onclick="toggleDarkMode()"] i');
-    darkModeIcon.textContent = isDarkMode ? 'light_mode' : 'dark_mode';
+    if (darkModeIcon) {
+        darkModeIcon.textContent = isDarkMode ? 'light_mode' : 'dark_mode';
+    }
 }
 
 // Funciones de notas
