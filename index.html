@@ -30,6 +30,9 @@
                     <button onclick="toggleFavorites()" class="nav-button" title="Favoritos">
                         <i class="material-icons">favorite</i>
                     </button>
+                    <button onclick="toggleNotes()" class="nav-button" title="Notas">
+                        <i class="material-icons">edit_note</i>
+                    </button>
                     <button onclick="toggleDarkMode()" class="nav-button" title="Modo Oscuro">
                         <i class="material-icons">dark_mode</i>
                     </button>
@@ -71,6 +74,28 @@
                     <div class="favorites-list"></div>
                 </div>
             </main>
+
+            <!-- Panel de notas deslizable -->
+            <div id="notes-panel" class="notes-panel">
+                <div class="notes-header">
+                    <h3>Mis Notas</h3>
+                    <button onclick="toggleNotes()" class="close-notes">
+                        <i class="material-icons">close</i>
+                    </button>
+                </div>
+                <div class="notes-content">
+                    <div class="notes-list"></div>
+                    <div class="add-note">
+                        <textarea placeholder="Escribe una nota..."></textarea>
+                        <div class="note-actions">
+                            <button onclick="saveNote()" class="save-note">
+                                <i class="material-icons">save</i>
+                                Guardar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
