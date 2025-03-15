@@ -204,10 +204,11 @@ main {
 .verse-container {
     display: flex;
     align-items: flex-start;
-    padding: 0.5rem 0;
+    padding: 0.75rem 0.5rem;
     border-bottom: 1px solid var(--border-color);
     margin: 0;
     gap: 0.5rem;
+    position: relative;
 }
 
 .verse-number {
@@ -227,18 +228,31 @@ main {
 }
 
 .favorite-button {
-    flex-shrink: 0;
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
     background: none;
     border: none;
     color: var(--primary-color);
     cursor: pointer;
-    padding: 0.2rem;
-    opacity: 0.6;
+    padding: 0.4rem;
+    opacity: 0;
     transition: opacity 0.3s ease;
+    border-radius: 50%;
+}
+
+.verse-container:hover .favorite-button,
+.favorite-button.active {
+    opacity: 1;
 }
 
 .favorite-button:hover {
-    opacity: 1;
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.favorite-button.active {
+    color: #e91e63;
 }
 
 .chapter-navigation {
@@ -248,10 +262,12 @@ main {
     right: 0;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding: 0.75rem;
     background: var(--background-color);
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
     z-index: 1000;
+    gap: 0.5rem;
 }
 
 .chapter-navigation button {
@@ -266,12 +282,38 @@ main {
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 0.9rem;
+    white-space: nowrap;
 }
 
-.chapter-navigation .chapter-button {
+.chapter-navigation button:hover {
+    background: var(--primary-dark);
+}
+
+.chapter-navigation .chapter-selector {
+    flex: 1;
+    max-width: 200px;
+    margin: 0;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+}
+
+.chapter-navigation .chapter-selector select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
     background: var(--card-background);
     color: var(--text-color);
-    border: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+    text-align: center;
+}
+
+.chapter-navigation .chapter-selector select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
 }
 
 .chapter-selector {
@@ -430,6 +472,26 @@ main {
     font-style: italic;
 }
 
+.toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    z-index: 2000;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
 .menu-button {
     position: fixed;
     top: 1rem;
@@ -469,8 +531,20 @@ main {
         font-size: 1.05rem;
     }
 
+    .chapter-navigation {
+        padding: 0.5rem;
+    }
+
     .chapter-navigation button {
         padding: 0.4rem 0.8rem;
+    }
+
+    .chapter-navigation button span {
+        display: none;
+    }
+
+    .chapter-navigation .chapter-selector {
+        max-width: 150px;
     }
 
     .testament-grid {

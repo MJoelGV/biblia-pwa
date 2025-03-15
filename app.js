@@ -171,16 +171,6 @@ function showChapter() {
     const totalChapters = bible[currentBook].length;
     
     contentElement.innerHTML = `
-        <div class="chapter-selector">
-            <span>Capítulo</span>
-            <select onchange="selectChapter(this.value)">
-                ${Array.from({length: totalChapters}, (_, i) => i + 1)
-                    .map(num => `<option value="${num}" ${num === currentChapter ? 'selected' : ''}>
-                        ${num}
-                    </option>`).join('')}
-            </select>
-            <span>de ${totalChapters}</span>
-        </div>
         <div class="verses">
             ${verses.map((verse, index) => `
                 <div class="verse-container">
@@ -193,12 +183,26 @@ function showChapter() {
             `).join('')}
         </div>
         <div class="chapter-navigation">
-            ${currentChapter > 1 ? `<button onclick="changeChapter(-1)"><i class="material-icons">chevron_left</i>Anterior</button>` : ''}
-            <button onclick="showChapterSelector()" class="chapter-button">
-                <i class="material-icons">menu_book</i>
-                Capítulo ${currentChapter}
-            </button>
-            ${currentChapter < totalChapters ? `<button onclick="changeChapter(1)">Siguiente<i class="material-icons">chevron_right</i></button>` : ''}
+            ${currentChapter > 1 ? `
+                <button onclick="changeChapter(-1)">
+                    <i class="material-icons">chevron_left</i>
+                    <span>Anterior</span>
+                </button>` : '<div></div>'}
+            
+            <div class="chapter-selector">
+                <select onchange="selectChapter(this.value)">
+                    ${Array.from({length: totalChapters}, (_, i) => i + 1)
+                        .map(num => `<option value="${num}" ${num === currentChapter ? 'selected' : ''}>
+                            Capítulo ${num}
+                        </option>`).join('')}
+                </select>
+            </div>
+
+            ${currentChapter < totalChapters ? `
+                <button onclick="changeChapter(1)">
+                    <span>Siguiente</span>
+                    <i class="material-icons">chevron_right</i>
+                </button>` : '<div></div>'}
         </div>
     `;
 }
@@ -430,6 +434,12 @@ function addToFavorites(verseNumber, verseText) {
     
     favorites.push(favorite);
     saveFavorites();
+    
+    // Actualizar el ícono del botón
+    const button = document.querySelector(`.verse-container:nth-child(${verseNumber}) .favorite-button i`);
+    button.textContent = 'favorite';
+    button.parentElement.classList.add('active');
+    
     showToast('Versículo agregado a favoritos');
 }
 
