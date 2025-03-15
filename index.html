@@ -24,14 +24,6 @@
             <header>
                 <h1>Biblia Reina Valera</h1>
                 <div class="top-nav">
-                    <button onclick="showTestament('antiguoTestamento')" class="testament-button">
-                        <i class="material-icons">book</i>
-                        <span>Antiguo Testamento</span>
-                    </button>
-                    <button onclick="showTestament('nuevoTestamento')" class="testament-button">
-                        <i class="material-icons">book</i>
-                        <span>Nuevo Testamento</span>
-                    </button>
                     <button onclick="toggleSearch()" class="search-button">
                         <i class="material-icons">search</i>
                     </button>
@@ -43,6 +35,17 @@
             </header>
 
             <main>
+                <div class="testament-nav">
+                    <button onclick="showTestament('antiguoTestamento')" class="testament-button">
+                        <i class="material-icons">book</i>
+                        <span>Antiguo Testamento</span>
+                    </button>
+                    <button onclick="showTestament('nuevoTestamento')" class="testament-button">
+                        <i class="material-icons">book</i>
+                        <span>Nuevo Testamento</span>
+                    </button>
+                </div>
+
                 <div id="home-page">
                     <div class="testament-grid">
                         <div id="antiguoTestamento" class="book-list" style="display: none;"></div>

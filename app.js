@@ -114,6 +114,10 @@ function showTestament(testament) {
     const antiguoTestamento = document.getElementById('antiguoTestamento');
     const nuevoTestamento = document.getElementById('nuevoTestamento');
     
+    // Mostrar la página principal si está oculta
+    document.getElementById('home-page').style.display = 'block';
+    document.getElementById('chapter-page').style.display = 'none';
+    
     // Ocultar ambos testamentos
     antiguoTestamento.style.display = 'none';
     nuevoTestamento.style.display = 'none';
@@ -141,6 +145,44 @@ function displayBooks(testament) {
                 ${book}
             </button>
         `).join('');
+}
+
+// Seleccionar un libro
+function selectBook(book) {
+    currentBook = book;
+    currentChapter = 1;
+    document.getElementById('home-page').style.display = 'none';
+    document.getElementById('chapter-page').style.display = 'block';
+    showChapter();
+}
+
+// Mostrar un capítulo
+function showChapter() {
+    const titleElement = document.querySelector('.chapter-title');
+    const contentElement = document.querySelector('.chapter-content');
+    
+    if (!bible || !bible[currentBook] || !bible[currentBook][currentChapter - 1]) {
+        contentElement.innerHTML = '<p>Capítulo no encontrado</p>';
+        return;
+    }
+
+    titleElement.textContent = `${currentBook} ${currentChapter}`;
+    const verses = bible[currentBook][currentChapter - 1];
+    
+    contentElement.innerHTML = `
+        <div class="verses">
+            ${verses.map((verse, index) => `
+                <div class="verse-container">
+                    <span class="verse-number">${index + 1}</span>
+                    <span class="verse-text">${verse}</span>
+                </div>
+            `).join('')}
+        </div>
+        <div class="chapter-navigation">
+            ${currentChapter > 1 ? `<button onclick="changeChapter(-1)"><i class="material-icons">chevron_left</i>Anterior</button>` : ''}
+            ${currentChapter < bible[currentBook].length ? `<button onclick="changeChapter(1)">Siguiente<i class="material-icons">chevron_right</i></button>` : ''}
+        </div>
+    `;
 }
 
 // Buscar en la Biblia
@@ -246,44 +288,6 @@ function showHomePage() {
     document.getElementById('proverb-page').style.display = 'flex';
     document.getElementById('bible-menu').style.display = 'none';
     showProverbOfDay();
-}
-
-// Seleccionar un libro
-function selectBook(book) {
-    currentBook = book;
-    currentChapter = 1;
-    document.getElementById('home-page').style.display = 'none';
-    document.getElementById('chapter-page').style.display = 'block';
-    showChapter();
-}
-
-// Mostrar un capítulo
-function showChapter() {
-    const titleElement = document.querySelector('.chapter-title');
-    const contentElement = document.querySelector('.chapter-content');
-    
-    if (!bible || !bible[currentBook] || !bible[currentBook][currentChapter - 1]) {
-        contentElement.innerHTML = '<p>Capítulo no encontrado</p>';
-        return;
-    }
-
-    titleElement.textContent = `${currentBook} ${currentChapter}`;
-    const verses = bible[currentBook][currentChapter - 1];
-    
-    contentElement.innerHTML = `
-        <div class="verses">
-            ${verses.map((verse, index) => `
-                <div class="verse-container">
-                    <span class="verse-number">${index + 1}</span>
-                    <span class="verse-text">${verse}</span>
-                </div>
-            `).join('')}
-        </div>
-        <div class="chapter-navigation">
-            ${currentChapter > 1 ? `<button onclick="changeChapter(-1)"><i class="material-icons">chevron_left</i>Anterior</button>` : ''}
-            ${currentChapter < bible[currentBook].length ? `<button onclick="changeChapter(1)">Siguiente<i class="material-icons">chevron_right</i></button>` : ''}
-        </div>
-    `;
 }
 
 // Normalizar nombres de libros
