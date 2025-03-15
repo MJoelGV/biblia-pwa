@@ -29,19 +29,20 @@ body {
 }
 
 header {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 0.5rem;
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    left: 0;
+    right: 0;
+    background: var(--background-color);
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 header h1 {
     margin: 0;
     font-size: 1.2rem;
     text-align: center;
+    padding: 0.5rem;
 }
 
 .testament-nav {
@@ -191,39 +192,121 @@ header h1 {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Estilos específicos para modo oscuro */
-@media (prefers-color-scheme: dark) {
-    .proverb-card {
-        background: rgba(0, 0, 0, 0.7);
-    }
-
-    .proverb-card .verse {
-        color: white;
-    }
-
-    .proverb-card .reference {
-        color: #81c784;
-    }
+main {
+    flex: 1;
+    padding: 1rem;
+    background: var(--card-background);
+    margin-top: 120px;
+    padding-bottom: 60px;
+    min-height: calc(100vh - 180px);
 }
 
-.proverb-of-day {
+.verse-container {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+    margin: 0;
+    gap: 0.5rem;
+}
+
+.verse-number {
+    flex-shrink: 0;
+    color: var(--primary-color);
+    font-weight: bold;
+    font-size: 0.9em;
+    padding-top: 0.2rem;
+    min-width: 1.5rem;
+}
+
+.verse-text {
+    flex-grow: 1;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+.favorite-button {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    padding: 0.2rem;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.favorite-button:hover {
+    opacity: 1;
+}
+
+.chapter-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: var(--background-color);
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.chapter-navigation button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 20px;
+    background: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.chapter-navigation .chapter-button {
     background: var(--card-background);
-    padding: 1rem;
-    margin: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.chapter-selector {
+    position: sticky;
+    top: 120px;
+    z-index: 900;
+    background: var(--background-color);
+    padding: 0.75rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chapter-selector select {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    background: var(--card-background);
+    color: var(--text-color);
+    font-size: 1rem;
+    min-width: 80px;
     text-align: center;
 }
 
-.proverb-of-day .reference {
-    color: var(--primary-color);
-    font-weight: bold;
-    margin-bottom: 0.5rem;
+.chapter-content {
+    padding: 0 0.5rem;
+    max-width: 100%;
+    margin: 0 auto;
 }
 
-.proverb-of-day .verse {
-    font-size: 1.1rem;
-    line-height: 1.4;
+.verses {
+    padding: 0.5rem 0;
 }
 
 .testament-grid {
@@ -275,59 +358,6 @@ header h1 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.verses {
-    padding: 0;
-    background: var(--card-background);
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.verse-container {
-    position: relative;
-    display: flex;
-    align-items: flex-start;
-    padding: 4px 8px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    background-color: var(--verse-background, transparent);
-}
-
-.verse-number {
-    flex-shrink: 0;
-    min-width: 20px;
-    color: var(--primary-color);
-    font-weight: bold;
-    font-size: 0.9rem;
-    opacity: 0.7;
-}
-
-.verse-text {
-    flex-grow: 1;
-    line-height: 1.2;
-    margin: 0;
-    padding-left: 4px;
-}
-
-.verse-container:last-child {
-    border-bottom: none;
-}
-
-.verse-container:hover {
-    --verse-background: rgba(0, 0, 0, 0.02);
-}
-
-.chapter-title {
-    font-size: 1.2rem;
-    margin: 0;
-    padding: 1rem;
-    color: var(--primary-color);
-    text-align: center;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.bottom-nav {
-    display: none;
-}
-
 .favorites-page {
     padding: 1rem;
 }
@@ -355,28 +385,6 @@ header h1 {
 .favorite-verse .text {
     color: var(--text-color);
     line-height: 1.5;
-}
-
-main {
-    flex: 1;
-    padding: 1rem;
-    background: var(--card-background);
-}
-
-.chapter-content {
-    padding: 1rem;
-    padding-bottom: 80px;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.chapter-content h2 {
-    font-size: 1.8rem;
-    margin-bottom: 2rem;
-    color: var(--primary-color);
-    text-align: center;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid rgba(76, 175, 80, 0.2);
 }
 
 .search-results {
@@ -448,82 +456,23 @@ main {
     font-size: 24px;
 }
 
-.chapter-selector {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin: 1rem 0;
-    padding: 0.5rem;
-    background: var(--card-background);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.chapter-selector select {
-    padding: 0.5rem;
-    border: 1px solid var(--primary-color);
-    border-radius: 4px;
-    background: var(--background-color);
-    color: var(--text-color);
-    font-size: 1rem;
-    cursor: pointer;
-    outline: none;
-    min-width: 80px;
-    text-align: center;
-}
-
-.chapter-selector select:focus {
-    border-color: var(--primary-dark);
-    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
-}
-
-.chapter-navigation {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 2rem;
-    padding: 1rem;
-    position: sticky;
-    bottom: 60px;
-    background: var(--background-color);
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.chapter-navigation button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    border: none;
-    border-radius: 8px;
-    background: var(--primary-color);
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.chapter-navigation button:hover {
-    background: var(--primary-dark);
-    transform: translateY(-2px);
-}
-
-.chapter-navigation .chapter-button {
-    background: var(--card-background);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-}
-
-.chapter-navigation .chapter-button:hover {
-    background: var(--background-color);
-    border-color: var(--primary-color);
-}
-
-.chapter-navigation i {
-    font-size: 1.2rem;
+.bottom-nav {
+    display: none;
 }
 
 @media (max-width: 600px) {
+    main {
+        margin-top: 100px;
+    }
+
+    .verse-text {
+        font-size: 1.05rem;
+    }
+
+    .chapter-navigation button {
+        padding: 0.4rem 0.8rem;
+    }
+
     .testament-grid {
         grid-template-columns: 1fr;
     }
