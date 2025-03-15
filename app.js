@@ -168,8 +168,19 @@ function showChapter() {
 
     titleElement.textContent = `${currentBook} ${currentChapter}`;
     const verses = bible[currentBook][currentChapter - 1];
+    const totalChapters = bible[currentBook].length;
     
     contentElement.innerHTML = `
+        <div class="chapter-selector">
+            <span>Capítulo</span>
+            <select onchange="selectChapter(this.value)">
+                ${Array.from({length: totalChapters}, (_, i) => i + 1)
+                    .map(num => `<option value="${num}" ${num === currentChapter ? 'selected' : ''}>
+                        ${num}
+                    </option>`).join('')}
+            </select>
+            <span>de ${totalChapters}</span>
+        </div>
         <div class="verses">
             ${verses.map((verse, index) => `
                 <div class="verse-container">
@@ -180,9 +191,19 @@ function showChapter() {
         </div>
         <div class="chapter-navigation">
             ${currentChapter > 1 ? `<button onclick="changeChapter(-1)"><i class="material-icons">chevron_left</i>Anterior</button>` : ''}
-            ${currentChapter < bible[currentBook].length ? `<button onclick="changeChapter(1)">Siguiente<i class="material-icons">chevron_right</i></button>` : ''}
+            <button onclick="showChapterSelector()" class="chapter-button">
+                <i class="material-icons">menu_book</i>
+                Capítulo ${currentChapter}
+            </button>
+            ${currentChapter < totalChapters ? `<button onclick="changeChapter(1)">Siguiente<i class="material-icons">chevron_right</i></button>` : ''}
         </div>
     `;
+}
+
+// Seleccionar capítulo
+function selectChapter(chapter) {
+    currentChapter = parseInt(chapter);
+    showChapter();
 }
 
 // Buscar en la Biblia
@@ -269,8 +290,8 @@ function showProverbOfDay() {
         currentChapter = chapter;
         document.getElementById('proverb-page').style.display = 'none';
         document.getElementById('bible-menu').style.display = 'block';
-        document.getElementById('home-page').style.display = 'block';
-        document.getElementById('chapter-page').style.display = 'none';
+        document.getElementById('home-page').style.display = 'none';
+        document.getElementById('chapter-page').style.display = 'block';
         showChapter();
     };
 }

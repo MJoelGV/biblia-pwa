@@ -411,6 +411,81 @@ main {
     font-size: 24px;
 }
 
+.chapter-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    padding: 0.5rem;
+    background: var(--card-background);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chapter-selector select {
+    padding: 0.5rem;
+    border: 1px solid var(--primary-color);
+    border-radius: 4px;
+    background: var(--background-color);
+    color: var(--text-color);
+    font-size: 1rem;
+    cursor: pointer;
+    outline: none;
+    min-width: 80px;
+    text-align: center;
+}
+
+.chapter-selector select:focus {
+    border-color: var(--primary-dark);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+.chapter-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 1rem;
+    position: sticky;
+    bottom: 60px;
+    background: var(--background-color);
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chapter-navigation button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.chapter-navigation button:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.chapter-navigation .chapter-button {
+    background: var(--card-background);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.chapter-navigation .chapter-button:hover {
+    background: var(--background-color);
+    border-color: var(--primary-color);
+}
+
+.chapter-navigation i {
+    font-size: 1.2rem;
+}
+
 @media (max-width: 600px) {
     .testament-grid {
         grid-template-columns: 1fr;
