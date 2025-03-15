@@ -32,6 +32,7 @@ async function initializeApp() {
     console.log('Iniciando la aplicación...');
     await loadBible();
     showProverbOfDay();
+    setupSearch();
 }
 
 // Cargar la Biblia
@@ -49,7 +50,9 @@ async function loadBible() {
         bible = {};
         for (const [book, chapters] of Object.entries(data)) {
             const normalizedBook = normalizeBookName(book);
-            bible[normalizedBook] = chapters;
+            bible[normalizedBook] = chapters.map(chapter => 
+                chapter.map(verse => verse.replace(/\/n/g, ' ').trim())
+            );
         }
         
         return true;
@@ -66,6 +69,87 @@ async function loadBible() {
         `;
         return false;
     }
+}
+
+// Configurar búsqueda
+function setupSearch() {
+    const searchInput = document.querySelector('.search-bar input');
+    let searchTimeout;
+
+    searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        const query = e.target.value.toLowerCase().trim();
+        
+        if (query.length < 2) {
+            document.getElementById('home-page').style.display = 'block';
+            document.getElementById('chapter-page').style.display = 'none';
+            return;
+        }
+
+        searchTimeout = setTimeout(() => {
+            const results = searchBible(query);
+            showSearchResults(results);
+        }, 300);
+    });
+}
+
+// Buscar en la Biblia
+function searchBible(query) {
+    const results = [];
+    for (const [book, chapters] of Object.entries(bible)) {
+        chapters.forEach((verses, chapterIndex) => {
+            verses.forEach((verse, verseIndex) => {
+                if (verse.toLowerCase().includes(query)) {
+                    results.push({
+                        book,
+                        chapter: chapterIndex + 1,
+                        verse: verseIndex + 1,
+                        text: verse
+                    });
+                }
+            });
+        });
+    }
+    return results;
+}
+
+// Mostrar resultados de búsqueda
+function showSearchResults(results) {
+    const contentElement = document.querySelector('.chapter-content');
+    document.getElementById('home-page').style.display = 'none';
+    document.getElementById('chapter-page').style.display = 'block';
+    
+    if (results.length === 0) {
+        contentElement.innerHTML = '<p class="no-results">No se encontraron resultados</p>';
+        return;
+    }
+
+    contentElement.innerHTML = `
+        <div class="search-results">
+            ${results.map(result => `
+                <div class="verse-container search-result" onclick="goToVerse('${result.book}', ${result.chapter}, ${result.verse})">
+                    <div class="reference">${result.book} ${result.chapter}:${result.verse}</div>
+                    <div class="verse-text">${result.text}</div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// Ir a un versículo específico
+function goToVerse(book, chapter, verse) {
+    currentBook = book;
+    currentChapter = chapter;
+    showChapter();
+    
+    setTimeout(() => {
+        const verseElement = document.querySelector(`.verse-container:nth-child(${verse})`);
+        if (verseElement) {
+            verseElement.classList.add('highlighted');
+            verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => verseElement.classList.remove('highlighted'), 2000);
+        }
+    }, 100);
 }
 
 // Mostrar proverbio del día
@@ -92,7 +176,10 @@ function showProverbOfDay() {
     proverbCard.onclick = () => {
         currentBook = 'Proverbios';
         currentChapter = chapter;
-        showBibleMenu();
+        document.getElementById('proverb-page').style.display = 'none';
+        document.getElementById('bible-menu').style.display = 'block';
+        document.getElementById('home-page').style.display = 'none';
+        document.getElementById('chapter-page').style.display = 'block';
         showChapter();
     };
 }
