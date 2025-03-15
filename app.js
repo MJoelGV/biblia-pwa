@@ -71,6 +71,22 @@ async function loadBible() {
     }
 }
 
+// Mostrar/ocultar buscador
+function toggleSearch() {
+    const searchBar = document.querySelector('.search-bar');
+    const searchInput = searchBar.querySelector('input');
+    
+    if (searchBar.style.display === 'none') {
+        searchBar.style.display = 'flex';
+        searchInput.focus();
+    } else {
+        searchBar.style.display = 'none';
+        searchInput.value = '';
+        document.getElementById('home-page').style.display = 'block';
+        document.getElementById('chapter-page').style.display = 'none';
+    }
+}
+
 // Configurar búsqueda
 function setupSearch() {
     const searchInput = document.querySelector('.search-bar input');
@@ -91,6 +107,40 @@ function setupSearch() {
             showSearchResults(results);
         }, 300);
     });
+}
+
+// Mostrar testamento
+function showTestament(testament) {
+    const antiguoTestamento = document.getElementById('antiguoTestamento');
+    const nuevoTestamento = document.getElementById('nuevoTestamento');
+    
+    // Ocultar ambos testamentos
+    antiguoTestamento.style.display = 'none';
+    nuevoTestamento.style.display = 'none';
+    
+    // Mostrar el testamento seleccionado
+    const selectedTestament = document.getElementById(testament);
+    if (selectedTestament.style.display === 'none') {
+        selectedTestament.style.display = 'grid';
+        displayBooks(testament);
+    } else {
+        selectedTestament.style.display = 'none';
+    }
+}
+
+// Mostrar libros
+function displayBooks(testament) {
+    if (!bible) return;
+    
+    const container = document.getElementById(testament);
+    const books = bibleStructure[testament];
+    
+    container.innerHTML = books
+        .map(book => `
+            <button onclick="selectBook('${book}')" class="book-button">
+                ${book}
+            </button>
+        `).join('');
 }
 
 // Buscar en la Biblia
@@ -172,14 +222,13 @@ function showProverbOfDay() {
         <div class="verse">${verse}</div>
     `;
     
-    // Agregar evento de clic para ir al capítulo completo
     proverbCard.onclick = () => {
         currentBook = 'Proverbios';
         currentChapter = chapter;
         document.getElementById('proverb-page').style.display = 'none';
         document.getElementById('bible-menu').style.display = 'block';
-        document.getElementById('home-page').style.display = 'none';
-        document.getElementById('chapter-page').style.display = 'block';
+        document.getElementById('home-page').style.display = 'block';
+        document.getElementById('chapter-page').style.display = 'none';
         showChapter();
     };
 }
@@ -188,9 +237,8 @@ function showProverbOfDay() {
 function showBibleMenu() {
     document.getElementById('proverb-page').style.display = 'none';
     document.getElementById('bible-menu').style.display = 'block';
-    document.getElementById('home-page').style.display = 'none';
-    document.getElementById('chapter-page').style.display = 'block';
-    displayBooks();
+    document.getElementById('home-page').style.display = 'block';
+    document.getElementById('chapter-page').style.display = 'none';
 }
 
 // Mostrar página principal
@@ -198,31 +246,6 @@ function showHomePage() {
     document.getElementById('proverb-page').style.display = 'flex';
     document.getElementById('bible-menu').style.display = 'none';
     showProverbOfDay();
-}
-
-// Mostrar libros
-function displayBooks() {
-    if (!bible) {
-        console.error('La Biblia no está cargada');
-        return;
-    }
-
-    const oldTestament = document.getElementById('antiguoTestamento');
-    const newTestament = document.getElementById('nuevoTestamento');
-    
-    oldTestament.innerHTML = bibleStructure.antiguoTestamento
-        .map(book => `
-            <button onclick="selectBook('${book}')" class="book-button">
-                ${book}
-            </button>
-        `).join('');
-    
-    newTestament.innerHTML = bibleStructure.nuevoTestamento
-        .map(book => `
-            <button onclick="selectBook('${book}')" class="book-button">
-                ${book}
-            </button>
-        `).join('');
 }
 
 // Seleccionar un libro

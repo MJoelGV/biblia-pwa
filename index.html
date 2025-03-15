@@ -23,7 +23,20 @@
         <div id="bible-menu" style="display: none;">
             <header>
                 <h1>Biblia Reina Valera</h1>
-                <div class="search-bar">
+                <div class="top-nav">
+                    <button onclick="showTestament('antiguoTestamento')" class="testament-button">
+                        <i class="material-icons">book</i>
+                        <span>Antiguo Testamento</span>
+                    </button>
+                    <button onclick="showTestament('nuevoTestamento')" class="testament-button">
+                        <i class="material-icons">book</i>
+                        <span>Nuevo Testamento</span>
+                    </button>
+                    <button onclick="toggleSearch()" class="search-button">
+                        <i class="material-icons">search</i>
+                    </button>
+                </div>
+                <div class="search-bar" style="display: none;">
                     <i class="material-icons">search</i>
                     <input type="text" placeholder="Buscar en la Biblia...">
                 </div>
@@ -32,14 +45,8 @@
             <main>
                 <div id="home-page">
                     <div class="testament-grid">
-                        <div class="testament-section">
-                            <h2>Antiguo Testamento</h2>
-                            <div class="book-list" id="antiguoTestamento"></div>
-                        </div>
-                        <div class="testament-section">
-                            <h2>Nuevo Testamento</h2>
-                            <div class="book-list" id="nuevoTestamento"></div>
-                        </div>
+                        <div id="antiguoTestamento" class="book-list" style="display: none;"></div>
+                        <div id="nuevoTestamento" class="book-list" style="display: none;"></div>
                     </div>
                 </div>
 
