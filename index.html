@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblia Reina Valera</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4CAF50">
 </head>
 <body>
@@ -15,7 +15,7 @@
             <h1>Biblia Reina Valera</h1>
             <div class="search-bar">
                 <i class="material-icons">search</i>
-                <input type="text" placeholder="Buscar en la Biblia..." oninput="searchBible(this.value)">
+                <input type="text" placeholder="Buscar en la Biblia...">
             </div>
         </header>
 
@@ -37,23 +37,19 @@
                 <h2 class="chapter-title"></h2>
                 <div class="chapter-content"></div>
             </div>
-
-            <div class="chapter-content">
-                <!-- El contenido se cargará dinámicamente -->
-            </div>
         </main>
 
         <nav class="bottom-nav">
-            <button onclick="showHomePage()" class="nav-button">
+            <button onclick="showHomePage()">
                 <i class="material-icons">home</i>
                 <span>Inicio</span>
             </button>
-            <button onclick="showFavorites()" class="nav-button">
-                <i class="material-icons">star</i>
+            <button onclick="showFavorites()">
+                <i class="material-icons">favorite</i>
                 <span>Favoritos</span>
             </button>
-            <button onclick="toggleDarkMode()" class="nav-button">
-                <i class="material-icons">brightness_4</i>
+            <button onclick="toggleDarkMode()">
+                <i class="material-icons">dark_mode</i>
                 <span>Modo</span>
             </button>
         </nav>
@@ -61,11 +57,14 @@
 
     <script src="app.js"></script>
     <script>
-        // Registrar el Service Worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js')
-                .then(registration => console.log('Service Worker registrado'))
-                .catch(error => console.log('Error al registrar el Service Worker:', error));
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('Service Worker registrado con éxito');
+                })
+                .catch(error => {
+                    console.error('Error al registrar el Service Worker:', error);
+                });
         }
 
         // Función para alternar el modo oscuro

@@ -27,14 +27,27 @@ let currentChapter = 1;
 let favorites = JSON.parse(localStorage.getItem('bibleFavorites') || '[]');
 let searchIndex = {};
 
+// Inicializar la aplicación
+async function initializeApp() {
+    console.log('Iniciando la aplicación...');
+    await loadBible();
+    displayBooks();
+    showHomePage();
+}
+
 // Cargar la Biblia
 async function loadBible() {
     try {
+        console.log('Intentando cargar la Biblia...');
         const response = await fetch('bible-data.json');
+        console.log('Estado de la respuesta:', response.status);
+        
         if (!response.ok) {
-            throw new Error('Error al cargar la Biblia');
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
         const data = await response.json();
+        console.log('Biblia cargada, procesando datos...');
         
         // Normalizar nombres de libros
         bible = {};
@@ -43,23 +56,88 @@ async function loadBible() {
             bible[normalizedBook] = chapters;
         }
         
-        // Inicializar búsqueda
-        initializeSearch();
-        
-        // Mostrar página principal
-        showHomePage();
+        console.log('Libros disponibles:', Object.keys(bible));
+        return true;
     } catch (error) {
         console.error('Error al cargar la Biblia:', error);
         document.querySelector('.chapter-content').innerHTML = `
             <div class="error-message">
-                <p>Error al cargar la Biblia. Por favor, intenta recargar la página.</p>
-                <button onclick="window.location.reload()" class="retry-button">
+                <p>Error al cargar la Biblia: ${error.message}</p>
+                <button onclick="initializeApp()" class="retry-button">
                     <i class="material-icons">refresh</i>
                     Recargar página
                 </button>
             </div>
         `;
+        return false;
     }
+}
+
+// Mostrar página principal
+function showHomePage() {
+    document.getElementById('home-page').style.display = 'block';
+    document.getElementById('chapter-page').style.display = 'none';
+    displayBooks();
+    showProverbOfDay();
+}
+
+// Mostrar proverbio del día
+function showProverbOfDay() {
+    if (!bible || !bible['Proverbios']) return;
+    
+    const today = new Date();
+    const dayOfMonth = today.getDate();
+    const chapter = (dayOfMonth % 31) + 1;
+    const verses = bible['Proverbios'][chapter - 1];
+    
+    if (!verses) return;
+    
+    const randomVerseNum = Math.floor(Math.random() * verses.length);
+    const verse = verses[randomVerseNum];
+    
+    const proverbHtml = `
+        <div class="proverb-of-day">
+            <div class="reference">Proverbios ${chapter}:${randomVerseNum + 1}</div>
+            <div class="verse">${verse}</div>
+        </div>
+    `;
+    
+    const homeContent = document.querySelector('.testament-grid');
+    homeContent.insertAdjacentHTML('beforebegin', proverbHtml);
+}
+
+// Mostrar libros
+function displayBooks() {
+    if (!bible) {
+        console.error('La Biblia no está cargada');
+        return;
+    }
+
+    const oldTestament = document.getElementById('antiguoTestamento');
+    const newTestament = document.getElementById('nuevoTestamento');
+    
+    oldTestament.innerHTML = bibleStructure.antiguoTestamento
+        .map(book => `
+            <button onclick="selectBook('${book}')" class="book-button">
+                ${book}
+            </button>
+        `).join('');
+    
+    newTestament.innerHTML = bibleStructure.nuevoTestamento
+        .map(book => `
+            <button onclick="selectBook('${book}')" class="book-button">
+                ${book}
+            </button>
+        `).join('');
+}
+
+// Seleccionar un libro
+function selectBook(book) {
+    currentBook = book;
+    currentChapter = 1;
+    document.getElementById('home-page').style.display = 'none';
+    document.getElementById('chapter-page').style.display = 'block';
+    displayChapter(book, currentChapter);
 }
 
 // Normalizar nombres de libros
@@ -87,154 +165,8 @@ function normalizeBookName(book) {
     return normalizations[book] || book;
 }
 
-// Inicializar la aplicación
-function initializeApp() {
-    createBookButtons();
-    showHomePage();
-    setupEventListeners();
-}
-
-// Crear botones de libros
-function createBookButtons() {
-    const bookNav = document.querySelector('.book-nav');
-    bookNav.innerHTML = ''; // Limpiar navegación existente
-    
-    Object.keys(bible).forEach(book => {
-        const button = document.createElement('button');
-        button.textContent = book;
-        button.onclick = () => selectBook(book);
-        if (book === currentBook) {
-            button.classList.add('active');
-        }
-        bookNav.appendChild(button);
-    });
-}
-
-// Seleccionar un libro
-function selectBook(book) {
-    currentBook = book;
-    currentChapter = 1;
-    updateUI();
-}
-
-// Mostrar página principal
-function showHomePage() {
-    const content = document.querySelector('.chapter-content');
-    const { chapter, verse } = getProverbOfTheDay();
-    
-    if (!bible || !bible["Proverbios"] || !bible["Proverbios"][chapter - 1]) {
-        content.innerHTML = '<p>Cargando...</p>';
-        return;
-    }
-
-    const proverbio = bible["Proverbios"][chapter - 1][verse - 1];
-    content.innerHTML = `
-        <div class="home-content">
-            <h2>Proverbio del Día</h2>
-            <div class="proverb-of-day">
-                <p class="reference">Proverbios ${chapter}:${verse}</p>
-                <p class="verse">${proverbio.replace(/\/n/g, ' ')}</p>
-                <button onclick="shareVerse('Proverbios', ${chapter}, ${verse})" class="share-button">
-                    <i class="material-icons">share</i> Compartir
-                </button>
-            </div>
-            <div class="testament-section">
-                <h3>Antiguo Testamento</h3>
-                <div class="book-grid">
-                    ${bibleStructure.antiguoTestamento.map(book => 
-                        `<button onclick="selectBook('${book}')">${book}</button>`
-                    ).join('')}
-                </div>
-                <h3>Nuevo Testamento</h3>
-                <div class="book-grid">
-                    ${bibleStructure.nuevoTestamento.map(book => 
-                        `<button onclick="selectBook('${book}')">${book}</button>`
-                    ).join('')}
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-// Función para obtener el proverbio del día
-function getProverbOfTheDay() {
-    const today = new Date();
-    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-    const chapter = (dayOfYear % 31) + 1;
-    const verse = (dayOfYear % 20) + 1;
-    return { chapter, verse };
-}
-
-// Función para compartir versículos
-async function shareVerse(book, chapter, verse) {
-    const text = bible[book][chapter - 1][verse - 1].replace(/\/n/g, ' ');
-    const shareText = `${book} ${chapter}:${verse} - ${text}`;
-    
-    if (navigator.share) {
-        try {
-            await navigator.share({
-                title: 'Biblia Reina Valera',
-                text: shareText
-            });
-        } catch (err) {
-            console.log('Error al compartir:', err);
-        }
-    } else {
-        // Fallback para navegadores que no soportan Web Share API
-        const textarea = document.createElement('textarea');
-        textarea.value = shareText;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        alert('¡Versículo copiado al portapapeles!');
-    }
-}
-
-// Función para agregar/quitar favoritos
-function toggleFavorite(book, chapter, verse) {
-    const key = `${book}-${chapter}-${verse}`;
-    const index = favorites.findIndex(f => f.key === key);
-    
-    if (index === -1) {
-        favorites.push({ key, book, chapter, verse });
-    } else {
-        favorites.splice(index, 1);
-    }
-    
-    localStorage.setItem('bibleFavorites', JSON.stringify(favorites));
-    showChapter(book, chapter); // Actualizar la vista
-}
-
-// Mostrar favoritos
-function showFavorites() {
-    const content = document.querySelector('.chapter-content');
-    content.innerHTML = `
-        <h2>Mis Versículos Favoritos</h2>
-        <div class="favorites-list">
-            ${favorites.map(f => {
-                const verse = bible[f.book][f.chapter - 1][f.verse - 1];
-                return `
-                    <div class="favorite-item">
-                        <p class="reference">${f.book} ${f.chapter}:${f.verse}</p>
-                        <p class="verse">${verse.replace(/\/n/g, ' ')}</p>
-                        <div class="verse-actions">
-                            <button onclick="shareVerse('${f.book}', ${f.chapter}, ${f.verse})">
-                                <i class="material-icons">share</i>
-                            </button>
-                            <button onclick="toggleFavorite('${f.book}', ${f.chapter}, ${f.verse})">
-                                <i class="material-icons">star</i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('') || '<p>No tienes versículos favoritos guardados.</p>'}
-        </div>
-    `;
-}
-
 // Mostrar un capítulo
-function showChapter(book, chapter) {
+function displayChapter(book, chapter) {
     const content = document.querySelector('.chapter-content');
     if (!bible || !bible[book] || !bible[book][chapter - 1]) {
         content.innerHTML = '<p>Capítulo no encontrado</p>';
@@ -247,22 +179,10 @@ function showChapter(book, chapter) {
         <div class="verses">
             ${verses.map((verse, index) => {
                 const verseNum = index + 1;
-                const isFavorite = favorites.some(f => 
-                    f.book === book && f.chapter === chapter && f.verse === verseNum
-                );
                 return `
                     <p>
                         <span class="verse-number">${verseNum}</span>
-                        ${verse.replace(/\/n/g, ' ')}
-                        <div class="verse-actions">
-                            <button onclick="shareVerse('${book}', ${chapter}, ${verseNum})">
-                                <i class="material-icons">share</i>
-                            </button>
-                            <button onclick="toggleFavorite('${book}', ${chapter}, ${verseNum})" 
-                                    class="favorite-button ${isFavorite ? 'active' : ''}">
-                                <i class="material-icons">${isFavorite ? 'star' : 'star_border'}</i>
-                            </button>
-                        </div>
+                        ${verse}
                     </p>
                 `;
             }).join('')}
@@ -279,112 +199,9 @@ function navigateChapter(delta) {
     const newChapter = currentChapter + delta;
     if (newChapter >= 1 && newChapter <= bible[currentBook].length) {
         currentChapter = newChapter;
-        updateUI();
+        displayChapter(currentBook, currentChapter);
     }
 }
 
-// Actualizar la interfaz
-function updateUI() {
-    // Actualizar botones de libros
-    document.querySelectorAll('.book-nav button').forEach(button => {
-        button.classList.toggle('active', button.textContent === currentBook);
-    });
-    
-    // Mostrar capítulo actual
-    showChapter(currentBook, currentChapter);
-}
-
-// Configurar búsqueda
-function setupSearch() {
-    const searchInput = document.querySelector('.search-bar input');
-    let searchTimeout;
-
-    searchInput.addEventListener('input', (e) => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            const query = e.target.value.toLowerCase();
-            if (query.length < 3) return;
-
-            const results = [];
-            Object.entries(bible).forEach(([book, chapters]) => {
-                chapters.forEach((verses, chapterIndex) => {
-                    verses.forEach((verse, verseIndex) => {
-                        if (verse.toLowerCase().includes(query)) {
-                            results.push({
-                                book,
-                                chapter: chapterIndex + 1,
-                                verse: verseIndex + 1,
-                                text: verse
-                            });
-                        }
-                    });
-                });
-            });
-
-            showSearchResults(results);
-        }, 300);
-    });
-}
-
-// Mostrar resultados de búsqueda
-function showSearchResults(results) {
-    const content = document.querySelector('.chapter-content');
-    if (results.length === 0) {
-        content.innerHTML = '<p>No se encontraron resultados</p>';
-        return;
-    }
-
-    content.innerHTML = `
-        <h2>Resultados de búsqueda</h2>
-        <div class="search-results">
-            ${results.map(result => `
-                <div class="search-result" onclick="goToVerse('${result.book}', ${result.chapter}, ${result.verse})">
-                    <div class="result-location">${result.book} ${result.chapter}:${result.verse}</div>
-                    <p>${result.text}</p>
-                </div>
-            `).join('')}
-        </div>
-    `;
-}
-
-// Ir a un versículo específico
-function goToVerse(book, chapter, verse) {
-    currentBook = book;
-    currentChapter = chapter;
-    updateUI();
-    // Resaltar el versículo
-    setTimeout(() => {
-        const verseElement = document.querySelector(`.verses p:nth-child(${verse})`);
-        if (verseElement) {
-            verseElement.classList.add('highlighted');
-            verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            setTimeout(() => verseElement.classList.remove('highlighted'), 2000);
-        }
-    }, 100);
-}
-
-// Configurar escuchadores de eventos
-function setupEventListeners() {
-    setupSearch();
-
-    // Navegación inferior
-    document.querySelectorAll('.bottom-nav button').forEach(button => {
-        button.addEventListener('click', () => {
-            const action = button.textContent.trim();
-            switch (action) {
-                case 'Libros':
-                    document.querySelector('.book-nav').scrollIntoView({ behavior: 'smooth' });
-                    break;
-                case 'Marcadores':
-                    // Implementar marcadores
-                    break;
-                case 'Ajustes':
-                    // Implementar ajustes
-                    break;
-            }
-        });
-    });
-}
-
-// Cargar la Biblia al iniciar
-loadBible();
+// Inicializar la aplicación
+initializeApp();
