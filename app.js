@@ -274,35 +274,68 @@ function goToVerse(book, chapter, verse) {
     }, 100);
 }
 
-// Mostrar proverbio del día
-function showProverbOfDay() {
-    if (!bible || !bible['Proverbios']) return;
-    
+// Obtener el proverbio del día
+function getProverbOfDay() {
+    if (!bible || !bible['Proverbios']) return null;
+
+    // Usar la fecha actual como semilla
     const today = new Date();
-    const dayOfMonth = today.getDate();
-    const chapter = (dayOfMonth % 31) + 1;
-    const verses = bible['Proverbios'][chapter - 1];
+    const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
     
-    if (!verses) return;
-    
-    const randomVerseNum = Math.floor(Math.random() * verses.length);
-    const verse = verses[randomVerseNum];
-    
+    // Obtener todos los proverbios disponibles
+    const allProverbs = [];
+    bible['Proverbios'].forEach((chapter, chapterIndex) => {
+        chapter.forEach((verse, verseIndex) => {
+            allProverbs.push({
+                chapter: chapterIndex + 1,
+                verse: verseIndex + 1,
+                text: verse
+            });
+        });
+    });
+
+    // Usar la fecha como semilla para seleccionar un proverbio
+    const index = seed % allProverbs.length;
+    return allProverbs[index];
+}
+
+// Mostrar el proverbio del día
+function showProverbOfDay() {
+    const proverb = getProverbOfDay();
+    if (!proverb) return;
+
     const proverbCard = document.getElementById('proverb-card');
-    proverbCard.innerHTML = `
-        <div class="reference">Proverbios ${chapter}:${randomVerseNum + 1}</div>
-        <div class="verse">${verse}</div>
-    `;
+    if (proverbCard) {
+        proverbCard.innerHTML = `
+            <div class="proverb-content">
+                <div class="proverb-text">${proverb.text}</div>
+                <div class="proverb-reference">Proverbios ${proverb.chapter}:${proverb.verse}</div>
+            </div>
+            <button onclick="goToProverb(${proverb.chapter}, ${proverb.verse})" class="read-more">
+                <i class="material-icons">menu_book</i>
+                Leer más
+            </button>
+        `;
+    }
+}
+
+// Ir al proverbio seleccionado
+function goToProverb(chapter, verse) {
+    currentBook = 'Proverbios';
+    currentChapter = chapter;
+    showChapter();
+    document.getElementById('bible-menu').style.display = 'block';
+    document.getElementById('proverb-page').style.display = 'none';
     
-    proverbCard.onclick = () => {
-        currentBook = 'Proverbios';
-        currentChapter = chapter;
-        document.getElementById('proverb-page').style.display = 'none';
-        document.getElementById('bible-menu').style.display = 'block';
-        document.getElementById('home-page').style.display = 'none';
-        document.getElementById('chapter-page').style.display = 'block';
-        showChapter();
-    };
+    // Esperar a que se cargue el capítulo y resaltar el versículo
+    setTimeout(() => {
+        const verseElement = document.querySelector(`.verse-container:nth-child(${verse})`);
+        if (verseElement) {
+            verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            verseElement.classList.add('highlighted');
+            setTimeout(() => verseElement.classList.remove('highlighted'), 2000);
+        }
+    }, 100);
 }
 
 // Mostrar el menú de la Biblia

@@ -147,56 +147,67 @@ header h1 {
 }
 
 .proverb-page {
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    min-height: 100vh;
     padding: 1rem;
-    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
-                url('https://images.unsplash.com/photo-1418065460487-3e41a6c84dc5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    color: white;
+    background: var(--background-color);
 }
 
 .proverb-card {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     max-width: 600px;
     width: 90%;
-    margin: 1rem;
+    padding: 2rem;
+    border-radius: 16px;
+    background: var(--card-background);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.proverb-content {
     text-align: center;
+    margin-bottom: 1.5rem;
 }
 
-.proverb-card .reference {
-    color: var(--primary-color);
-    font-weight: bold;
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.proverb-card .verse {
-    font-size: 1.4rem;
+.proverb-text {
+    font-size: 1.5rem;
     line-height: 1.6;
-    margin-bottom: 1rem;
     color: var(--text-color);
-    text-shadow: 
-        -1px -1px 0 rgba(0, 0, 0, 0.3),
-        1px -1px 0 rgba(0, 0, 0, 0.3),
-        -1px 1px 0 rgba(0, 0, 0, 0.3),
-        1px 1px 0 rgba(0, 0, 0, 0.3);
+    margin-bottom: 1rem;
+    font-style: italic;
 }
 
-.proverb-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+.proverb-reference {
+    color: var(--primary-color);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.read-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary-color);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.read-more:hover {
+    background: var(--primary-dark);
+}
+
+.read-more i {
+    font-size: 1.2rem;
 }
 
 main {
