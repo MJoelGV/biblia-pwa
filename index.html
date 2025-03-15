@@ -11,48 +11,59 @@
 </head>
 <body>
     <div class="app">
-        <header>
-            <h1>Biblia Reina Valera</h1>
-            <div class="search-bar">
-                <i class="material-icons">search</i>
-                <input type="text" placeholder="Buscar en la Biblia...">
+        <div id="proverb-page" class="proverb-page">
+            <div id="proverb-card" class="proverb-card">
+                <!-- El proverbio se cargará dinámicamente -->
             </div>
-        </header>
+            <button class="menu-button" onclick="showBibleMenu()">
+                <i class="material-icons">menu</i>
+            </button>
+        </div>
 
-        <main>
-            <div id="home-page">
-                <div class="testament-grid">
-                    <div class="testament-section">
-                        <h2>Antiguo Testamento</h2>
-                        <div class="book-list" id="antiguoTestamento"></div>
-                    </div>
-                    <div class="testament-section">
-                        <h2>Nuevo Testamento</h2>
-                        <div class="book-list" id="nuevoTestamento"></div>
+        <div id="bible-menu" style="display: none;">
+            <header>
+                <h1>Biblia Reina Valera</h1>
+                <div class="search-bar">
+                    <i class="material-icons">search</i>
+                    <input type="text" placeholder="Buscar en la Biblia...">
+                </div>
+            </header>
+
+            <main>
+                <div id="home-page">
+                    <div class="testament-grid">
+                        <div class="testament-section">
+                            <h2>Antiguo Testamento</h2>
+                            <div class="book-list" id="antiguoTestamento"></div>
+                        </div>
+                        <div class="testament-section">
+                            <h2>Nuevo Testamento</h2>
+                            <div class="book-list" id="nuevoTestamento"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div id="chapter-page" style="display: none;">
-                <h2 class="chapter-title"></h2>
-                <div class="chapter-content"></div>
-            </div>
-        </main>
+                <div id="chapter-page" style="display: none;">
+                    <h2 class="chapter-title"></h2>
+                    <div class="chapter-content"></div>
+                </div>
+            </main>
 
-        <nav class="bottom-nav">
-            <button onclick="showHomePage()">
-                <i class="material-icons">home</i>
-                <span>Inicio</span>
-            </button>
-            <button onclick="showFavorites()">
-                <i class="material-icons">favorite</i>
-                <span>Favoritos</span>
-            </button>
-            <button onclick="toggleDarkMode()">
-                <i class="material-icons">dark_mode</i>
-                <span>Modo</span>
-            </button>
-        </nav>
+            <nav class="bottom-nav">
+                <button onclick="showHomePage()">
+                    <i class="material-icons">home</i>
+                    <span>Inicio</span>
+                </button>
+                <button onclick="showFavorites()">
+                    <i class="material-icons">favorite</i>
+                    <span>Favoritos</span>
+                </button>
+                <button onclick="toggleDarkMode()">
+                    <i class="material-icons">dark_mode</i>
+                    <span>Modo</span>
+                </button>
+            </nav>
+        </div>
     </div>
 
     <script src="app.js"></script>
@@ -87,6 +98,12 @@
                     showHomePage();
                 });
         });
+
+        // Función para mostrar el menú de la Biblia
+        function showBibleMenu() {
+            document.getElementById('proverb-page').style.display = 'none';
+            document.getElementById('bible-menu').style.display = 'block';
+        }
     </script>
 </body>
 </html>

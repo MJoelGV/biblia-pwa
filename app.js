@@ -1,3 +1,10 @@
+// Variables globales
+let bible = null;
+let currentBook = 'Proverbios';
+let currentChapter = 1;
+let favorites = JSON.parse(localStorage.getItem('bibleFavorites') || '[]');
+let searchIndex = {};
+
 // Estructura de la Biblia
 const bibleStructure = {
     antiguoTestamento: [
@@ -20,19 +27,11 @@ const bibleStructure = {
     ]
 };
 
-// Variables globales
-let bible = null;
-let currentBook = 'Génesis';
-let currentChapter = 1;
-let favorites = JSON.parse(localStorage.getItem('bibleFavorites') || '[]');
-let searchIndex = {};
-
 // Inicializar la aplicación
 async function initializeApp() {
     console.log('Iniciando la aplicación...');
     await loadBible();
-    displayBooks();
-    showHomePage();
+    showProverbOfDay();
 }
 
 // Cargar la Biblia
@@ -40,8 +39,6 @@ async function loadBible() {
     try {
         console.log('Intentando cargar la Biblia...');
         const response = await fetch('bible-data.json');
-        console.log('Estado de la respuesta:', response.status);
-        
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -49,18 +46,16 @@ async function loadBible() {
         const data = await response.json();
         console.log('Biblia cargada, procesando datos...');
         
-        // Normalizar nombres de libros
         bible = {};
         for (const [book, chapters] of Object.entries(data)) {
             const normalizedBook = normalizeBookName(book);
             bible[normalizedBook] = chapters;
         }
         
-        console.log('Libros disponibles:', Object.keys(bible));
         return true;
     } catch (error) {
         console.error('Error al cargar la Biblia:', error);
-        document.querySelector('.chapter-content').innerHTML = `
+        document.getElementById('proverb-card').innerHTML = `
             <div class="error-message">
                 <p>Error al cargar la Biblia: ${error.message}</p>
                 <button onclick="initializeApp()" class="retry-button">
@@ -71,14 +66,6 @@ async function loadBible() {
         `;
         return false;
     }
-}
-
-// Mostrar página principal
-function showHomePage() {
-    document.getElementById('home-page').style.display = 'block';
-    document.getElementById('chapter-page').style.display = 'none';
-    displayBooks();
-    showProverbOfDay();
 }
 
 // Mostrar proverbio del día
@@ -95,15 +82,35 @@ function showProverbOfDay() {
     const randomVerseNum = Math.floor(Math.random() * verses.length);
     const verse = verses[randomVerseNum];
     
-    const proverbHtml = `
-        <div class="proverb-of-day">
-            <div class="reference">Proverbios ${chapter}:${randomVerseNum + 1}</div>
-            <div class="verse">${verse}</div>
-        </div>
+    const proverbCard = document.getElementById('proverb-card');
+    proverbCard.innerHTML = `
+        <div class="reference">Proverbios ${chapter}:${randomVerseNum + 1}</div>
+        <div class="verse">${verse}</div>
     `;
     
-    const homeContent = document.querySelector('.testament-grid');
-    homeContent.insertAdjacentHTML('beforebegin', proverbHtml);
+    // Agregar evento de clic para ir al capítulo completo
+    proverbCard.onclick = () => {
+        currentBook = 'Proverbios';
+        currentChapter = chapter;
+        showBibleMenu();
+        showChapter();
+    };
+}
+
+// Mostrar el menú de la Biblia
+function showBibleMenu() {
+    document.getElementById('proverb-page').style.display = 'none';
+    document.getElementById('bible-menu').style.display = 'block';
+    document.getElementById('home-page').style.display = 'none';
+    document.getElementById('chapter-page').style.display = 'block';
+    displayBooks();
+}
+
+// Mostrar página principal
+function showHomePage() {
+    document.getElementById('proverb-page').style.display = 'flex';
+    document.getElementById('bible-menu').style.display = 'none';
+    showProverbOfDay();
 }
 
 // Mostrar libros
@@ -137,7 +144,36 @@ function selectBook(book) {
     currentChapter = 1;
     document.getElementById('home-page').style.display = 'none';
     document.getElementById('chapter-page').style.display = 'block';
-    displayChapter(book, currentChapter);
+    showChapter();
+}
+
+// Mostrar un capítulo
+function showChapter() {
+    const titleElement = document.querySelector('.chapter-title');
+    const contentElement = document.querySelector('.chapter-content');
+    
+    if (!bible || !bible[currentBook] || !bible[currentBook][currentChapter - 1]) {
+        contentElement.innerHTML = '<p>Capítulo no encontrado</p>';
+        return;
+    }
+
+    titleElement.textContent = `${currentBook} ${currentChapter}`;
+    const verses = bible[currentBook][currentChapter - 1];
+    
+    contentElement.innerHTML = `
+        <div class="verses">
+            ${verses.map((verse, index) => `
+                <div class="verse-container">
+                    <span class="verse-number">${index + 1}</span>
+                    <span class="verse-text">${verse}</span>
+                </div>
+            `).join('')}
+        </div>
+        <div class="chapter-navigation">
+            ${currentChapter > 1 ? `<button onclick="changeChapter(-1)"><i class="material-icons">chevron_left</i>Anterior</button>` : ''}
+            ${currentChapter < bible[currentBook].length ? `<button onclick="changeChapter(1)">Siguiente<i class="material-icons">chevron_right</i></button>` : ''}
+        </div>
+    `;
 }
 
 // Normalizar nombres de libros
@@ -147,6 +183,7 @@ function normalizeBookName(book) {
         'Exodo': 'Éxodo',
         'Levitico': 'Levítico',
         'Numeros': 'Números',
+        'Deuteronomio': 'Deuteronomio',
         'Josue': 'Josué',
         'Nehemias': 'Nehemías',
         'Eclesiastes': 'Eclesiastés',
@@ -165,41 +202,12 @@ function normalizeBookName(book) {
     return normalizations[book] || book;
 }
 
-// Mostrar un capítulo
-function displayChapter(book, chapter) {
-    const content = document.querySelector('.chapter-content');
-    if (!bible || !bible[book] || !bible[book][chapter - 1]) {
-        content.innerHTML = '<p>Capítulo no encontrado</p>';
-        return;
-    }
-
-    const verses = bible[book][chapter - 1];
-    content.innerHTML = `
-        <h2>${book} ${chapter}</h2>
-        <div class="verses">
-            ${verses.map((verse, index) => {
-                const verseNum = index + 1;
-                return `
-                    <p>
-                        <span class="verse-number">${verseNum}</span>
-                        ${verse}
-                    </p>
-                `;
-            }).join('')}
-        </div>
-        <div class="chapter-navigation">
-            ${chapter > 1 ? `<button onclick="navigateChapter(-1)"><i class="material-icons">chevron_left</i>Anterior</button>` : ''}
-            ${chapter < bible[book].length ? `<button onclick="navigateChapter(1)">Siguiente<i class="material-icons">chevron_right</i></button>` : ''}
-        </div>
-    `;
-}
-
-// Navegar entre capítulos
-function navigateChapter(delta) {
+// Cambiar de capítulo
+function changeChapter(delta) {
     const newChapter = currentChapter + delta;
     if (newChapter >= 1 && newChapter <= bible[currentBook].length) {
         currentChapter = newChapter;
-        displayChapter(currentBook, currentChapter);
+        showChapter();
     }
 }
 
