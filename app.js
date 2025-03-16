@@ -485,6 +485,21 @@ function deleteNote(index) {
     }
 }
 
+// Mostrar/ocultar favoritos
+function toggleFavorites() {
+    const homePage = document.getElementById('home-page');
+    const chapterPage = document.getElementById('chapter-page');
+    const favoritesPage = document.getElementById('favorites-page');
+    const notesPanel = document.getElementById('notes-panel');
+
+    homePage.style.display = 'none';
+    chapterPage.style.display = 'none';
+    favoritesPage.style.display = 'block';
+    notesPanel.style.display = 'none';
+
+    showFavorites();
+}
+
 // Mostrar favoritos
 function showFavorites() {
     const favoritesList = document.querySelector('.favorites-list');
