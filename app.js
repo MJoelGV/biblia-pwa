@@ -406,6 +406,17 @@ function loadSavedData() {
             localStorage.setItem('favorites', '[]');
         }
     }
+
+    // Cargar notas
+    const savedNotes = localStorage.getItem('notes');
+    if (savedNotes) {
+        try {
+            notes = JSON.parse(savedNotes);
+        } catch (e) {
+            notes = [];
+            localStorage.setItem('notes', '[]');
+        }
+    }
     
     // Cargar modo oscuro
     if (localStorage.getItem('darkMode') === 'true') {
@@ -425,58 +436,68 @@ function toggleDarkMode() {
     }
 }
 
-// Funciones de notas
+// Mostrar/ocultar notas
 function toggleNotes() {
     const notesPanel = document.getElementById('notes-panel');
     notesPanel.classList.toggle('open');
+    
     if (notesPanel.classList.contains('open')) {
         showNotes();
     }
 }
 
+// Mostrar notas
 function showNotes() {
     const notesList = document.querySelector('.notes-list');
+    if (!notesList) return;
+
+    if (notes.length === 0) {
+        notesList.innerHTML = '<p class="notes-empty">No tienes notas guardadas</p>';
+        return;
+    }
+
     notesList.innerHTML = notes.map((note, index) => `
         <div class="note-item">
-            <div class="note-header">
-                <span>${note.date}</span>
-                <button onclick="deleteNote(${index})" class="delete-note">
+            <div class="note-content">${note.text}</div>
+            <div class="note-actions">
+                <button onclick="deleteNote(${index})" class="delete-note" title="Eliminar nota">
                     <i class="material-icons">delete</i>
                 </button>
             </div>
-            <div class="note-text">${note.text}</div>
-            <div class="note-reference">${note.reference || ''}</div>
         </div>
-    `).join('') || '<p class="notes-empty">No tienes notas guardadas</p>';
+    `).join('');
 }
 
+// Guardar nota
 function saveNote() {
     const textarea = document.querySelector('.add-note textarea');
     const text = textarea.value.trim();
     
-    if (text) {
-        const note = {
-            text,
-            date: new Date().toLocaleDateString(),
-            reference: `${currentBook} ${currentChapter}`
-        };
-        
-        notes.unshift(note);
-        localStorage.setItem('notes', JSON.stringify(notes));
-        
-        textarea.value = '';
-        showNotes();
-        showToast('Nota guardada');
+    if (!text) {
+        showToast('Por favor escribe una nota');
+        return;
     }
+    
+    const note = {
+        id: Date.now().toString(),
+        text: text,
+        date: new Date().toISOString()
+    };
+    
+    notes.push(note);
+    localStorage.setItem('notes', JSON.stringify(notes));
+    
+    textarea.value = '';
+    showNotes();
+    showToast('Nota guardada');
 }
 
+// Eliminar nota
 function deleteNote(index) {
-    if (confirm('¿Deseas eliminar esta nota?')) {
-        notes.splice(index, 1);
-        localStorage.setItem('notes', JSON.stringify(notes));
-        showNotes();
-        showToast('Nota eliminada');
-    }
+    notes.splice(index, 1);
+    localStorage.setItem('notes', JSON.stringify(notes));
+    showNotes();
+    showToast('Nota eliminada');
 }
 
 // Mostrar/ocultar favoritos
