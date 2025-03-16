@@ -487,17 +487,12 @@ function deleteNote(index) {
 
 // Mostrar/ocultar favoritos
 function toggleFavorites() {
-    const homePage = document.getElementById('home-page');
-    const chapterPage = document.getElementById('chapter-page');
-    const favoritesPage = document.getElementById('favorites-page');
-    const notesPanel = document.getElementById('notes-panel');
-
-    homePage.style.display = 'none';
-    chapterPage.style.display = 'none';
-    favoritesPage.style.display = 'block';
-    notesPanel.style.display = 'none';
-
-    showFavorites();
+    const favoritesPanel = document.getElementById('favorites-panel');
+    favoritesPanel.classList.toggle('open');
+    
+    if (favoritesPanel.classList.contains('open')) {
+        showFavorites();
+    }
 }
 
 // Mostrar favoritos
@@ -519,10 +514,10 @@ function showFavorites() {
                 </div>
             </div>
             <div class="favorite-actions">
-                <button onclick="goToVerse('${fav.book}', ${fav.chapter}, ${fav.verse})" class="go-to-verse">
+                <button onclick="goToVerse('${fav.book}', ${fav.chapter}, ${fav.verse})" class="go-to-verse" title="Ir al versículo">
                     <i class="material-icons">menu_book</i>
                 </button>
-                <button onclick="removeFavorite('${fav.id}')" class="remove-favorite">
+                <button onclick="removeFavorite('${fav.id}')" class="remove-favorite" title="Eliminar de favoritos">
                     <i class="material-icons">delete</i>
                 </button>
             </div>
