@@ -323,9 +323,12 @@ function showProverbOfDay() {
 function goToProverb(chapter, verse) {
     currentBook = 'Proverbios';
     currentChapter = chapter;
-    showChapter();
     document.getElementById('bible-menu').style.display = 'block';
     document.getElementById('proverb-page').style.display = 'none';
+    document.getElementById('chapter-page').style.display = 'block';
+    document.getElementById('home-page').style.display = 'none';
+    
+    showChapter();
     
     // Esperar a que se cargue el capítulo y resaltar el versículo
     setTimeout(() => {
@@ -487,7 +490,7 @@ function showFavorites() {
     favoritesList.innerHTML = favorites.length ? favorites.map(fav => `
         <div class="favorite-item">
             <div class="favorite-text">${fav.text}</div>
-            <div class="favorite-reference">${fav.book} ${fav.chapter}:${fav.verse}</div>
+            <div class="favorite-reference">Proverbios ${fav.chapter}:${fav.verse}</div>
             <button onclick="removeFavorite('${fav.id}')" class="remove-favorite">
                 <i class="material-icons">delete</i>
             </button>
