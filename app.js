@@ -396,26 +396,20 @@ function changeChapter(delta) {
 
 // Cargar datos guardados
 function loadSavedData() {
+    // Cargar favoritos
     const savedFavorites = localStorage.getItem('favorites');
     if (savedFavorites) {
-        favorites = JSON.parse(savedFavorites);
-    }
-    
-    const savedNotes = localStorage.getItem('notes');
-    if (savedNotes) {
-        notes = JSON.parse(savedNotes);
-    }
-    
-    const savedDarkMode = localStorage.getItem('darkMode');
-    if (savedDarkMode !== null) {
-        isDarkMode = JSON.parse(savedDarkMode);
-        if (isDarkMode) {
-            document.body.classList.add('dark-mode');
-            const darkModeIcon = document.querySelector('button[onclick="toggleDarkMode()"] i');
-            if (darkModeIcon) {
-                darkModeIcon.textContent = 'light_mode';
-            }
+        try {
+            favorites = JSON.parse(savedFavorites);
+        } catch (e) {
+            favorites = [];
+            localStorage.setItem('favorites', '[]');
         }
+    }
+    
+    // Cargar modo oscuro
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
     }
 }
 
@@ -540,8 +534,16 @@ function addToFavorites(verseNumber, verseText) {
     
     // Actualizar el ícono del botón
     const button = document.querySelector(`.verse-container:nth-child(${verseNumber}) .favorite-button i`);
-    button.textContent = 'favorite';
-    button.parentElement.classList.add('active');
+    if (button) {
+        button.textContent = 'favorite';
+        button.parentElement.classList.add('active');
+    }
+    
+    // Actualizar la lista de favoritos si el panel está abierto
+    const favoritesPanel = document.getElementById('favorites-panel');
+    if (favoritesPanel.classList.contains('open')) {
+        showFavorites();
+    }
     
     showToast('Versículo agregado a favoritos');
 }
@@ -550,7 +552,20 @@ function addToFavorites(verseNumber, verseText) {
 function removeFavorite(id) {
     favorites = favorites.filter(fav => fav.id !== id);
     localStorage.setItem('favorites', JSON.stringify(favorites));
+    
+    // Actualizar la lista de favoritos
     showFavorites();
+    
+    // Actualizar el ícono si el versículo está visible
+    const verse = favorites.find(fav => fav.id === id);
+    if (verse && verse.book === currentBook && verse.chapter === currentChapter) {
+        const button = document.querySelector(`.verse-container:nth-child(${verse.verse}) .favorite-button i`);
+        if (button) {
+            button.textContent = 'favorite_border';
+            button.parentElement.classList.remove('active');
+        }
+    }
+    
     showToast('Versículo eliminado de favoritos');
 }
 
