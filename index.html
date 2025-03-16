@@ -4,10 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblia de Poder y Milagros</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <!-- Firebase Authentication -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <!-- Firebase Config -->
+    <script src="firebase-config.js" type="module"></script>
+    <!-- Auth Module -->
+    <script src="auth.js" type="module"></script>
     <meta name="theme-color" content="#4CAF50">
 </head>
 <body>
@@ -40,6 +50,17 @@
                     <button onclick="toggleSearch()" class="search-button" title="Buscar">
                         <i class="material-icons">search</i>
                     </button>
+                    <!-- Botón de inicio de sesión -->
+                    <button id="loginButton" onclick="loginWithGoogle()" class="nav-button" title="Iniciar sesión">
+                        <i class="material-icons">login</i>
+                    </button>
+                    <!-- Info del usuario -->
+                    <div id="userInfo" class="user-info" style="display: none;">
+                        <span id="userName"></span>
+                        <button onclick="logout()" class="nav-button" title="Cerrar sesión">
+                            <i class="material-icons">logout</i>
+                        </button>
+                    </div>
                 </div>
                 <div class="search-bar" style="display: none;">
                     <input type="text" placeholder="Buscar en la Biblia...">

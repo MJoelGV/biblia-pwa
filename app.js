@@ -26,15 +26,79 @@ let bibleStructure = {
         'Judas', 'Apocalipsis'
     ]
 };
+let currentUser = null;
+
+// Importar Firebase
+import { auth, db } from './firebase-config.js';
 
 // Inicializar la aplicación
 async function initializeApp() {
     console.log('Iniciando la aplicación...');
     loadSavedData(); // Primero cargamos los datos guardados
     await loadBible(); // Esperamos a que la Biblia se cargue
+    setupAuth();
     showProverbOfDay();
     setupSearch();
     loadDarkModePreference();
+}
+
+// Configurar autenticación
+function setupAuth() {
+    auth.onAuthStateChanged(async (user) => {
+        currentUser = user;
+        if (user) {
+            // Usuario autenticado
+            await loadUserData();
+            showToast(`¡Bienvenido, ${user.displayName}!`);
+        } else {
+            // Usuario no autenticado
+            favorites = [];
+            notes = [];
+        }
+        updateUI();
+    });
+}
+
+// Cargar datos del usuario
+async function loadUserData() {
+    try {
+        // Cargar favoritos
+        const favoritesDoc = await db.collection('users').doc(currentUser.uid).collection('favorites').doc('data').get();
+        if (favoritesDoc.exists) {
+            favorites = favoritesDoc.data().items || [];
+        }
+
+        // Cargar notas
+        const notesDoc = await db.collection('users').doc(currentUser.uid).collection('notes').doc('data').get();
+        if (notesDoc.exists) {
+            notes = notesDoc.data().items || [];
+        }
+    } catch (error) {
+        console.error('Error al cargar datos del usuario:', error);
+        showToast('Error al cargar tus datos');
+    }
+}
+
+// Guardar datos del usuario
+async function saveUserData() {
+    if (!currentUser) return;
+
+    try {
+        // Guardar favoritos
+        await db.collection('users').doc(currentUser.uid).collection('favorites').doc('data').set({
+            items: favorites,
+            updatedAt: new Date()
+        });
+
+        // Guardar notas
+        await db.collection('users').doc(currentUser.uid).collection('notes').doc('data').set({
+            items: notes,
+            updatedAt: new Date()
+        });
+    } catch (error) {
+        console.error('Error al guardar datos:', error);
+        showToast('Error al guardar tus datos');
+    }
 }
 
 // Cargar la Biblia
@@ -430,50 +494,81 @@ function changeChapter(delta) {
     }
 }
 
-// Cargar datos guardados
-function loadSavedData() {
-    console.log('Cargando datos guardados...');
-    
-    // Cargar favoritos
-    const savedFavorites = localStorage.getItem('favorites');
-    if (savedFavorites) {
-        try {
-            favorites = JSON.parse(savedFavorites);
-            console.log('Favoritos cargados:', favorites.length);
-        } catch (e) {
-            favorites = [];
-            localStorage.setItem('favorites', '[]');
-        }
+// Agregar a favoritos
+async function addToFavorites(verseNumber, verseText) {
+    if (!currentUser) {
+        showToast('Inicia sesión para guardar favoritos');
+        return;
     }
 
-    // Cargar notas
-    const savedNotes = localStorage.getItem('notes');
-    if (savedNotes) {
-        try {
-            notes = JSON.parse(savedNotes);
-            console.log('Notas cargadas:', notes.length);
-        } catch (e) {
-            notes = [];
-            localStorage.setItem('notes', '[]');
-        }
+    const favorite = {
+        id: Date.now().toString(),
+        book: currentBook,
+        chapter: currentChapter,
+        verse: verseNumber,
+        text: verseText
+    };
+    
+    favorites.unshift(favorite);
+    await saveUserData();
+    
+    // Actualizar UI
+    const button = document.querySelector(`.verse-container:nth-child(${verseNumber}) .favorite-button i`);
+    if (button) {
+        button.textContent = 'favorite';
+        button.parentElement.classList.add('active');
     }
     
-    // Cargar modo oscuro
-    if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
-    }
+    showToast('Versículo agregado a favoritos');
 }
 
-// Alternar modo oscuro
-function toggleDarkMode() {
-    isDarkMode = !isDarkMode;
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('darkMode', isDarkMode);
-    
-    const darkModeIcon = document.querySelector('button[onclick="toggleDarkMode()"] i');
-    if (darkModeIcon) {
-        darkModeIcon.textContent = isDarkMode ? 'light_mode' : 'dark_mode';
+// Eliminar de favoritos
+async function removeFavorite(id) {
+    if (!currentUser) return;
+
+    favorites = favorites.filter(fav => fav.id !== id);
+    await saveUserData();
+    showFavorites();
+    showToast('Versículo eliminado de favoritos');
+}
+
+// Guardar nota
+async function saveNote() {
+    if (!currentUser) {
+        showToast('Inicia sesión para guardar notas');
+        return;
     }
+
+    const textarea = document.querySelector('.add-note textarea');
+    const text = textarea.value.trim();
+    
+    if (!text) {
+        showToast('Por favor escribe una nota');
+        return;
+    }
+    
+    const note = {
+        id: Date.now().toString(),
+        text: text,
+        date: new Date().toISOString()
+    };
+    
+    notes.unshift(note);
+    await saveUserData();
+    
+    textarea.value = '';
+    showNotes();
+    showToast('Nota guardada');
+}
+
+// Eliminar nota
+async function deleteNote(index) {
+    if (!currentUser) return;
+
+    notes.splice(index, 1);
+    await saveUserData();
+    showNotes();
+    showToast('Nota eliminada');
 }
 
 // Mostrar/ocultar notas
@@ -507,40 +602,6 @@ function showNotes() {
             </div>
         </div>
     `).join('');
-}
-
-// Guardar nota
-function saveNote() {
-    const textarea = document.querySelector('.add-note textarea');
-    const text = textarea.value.trim();
-    
-    if (!text) {
-        showToast('Por favor escribe una nota');
-        return;
-    }
-    
-    const note = {
-        id: Date.now().toString(),
-        text: text,
-        date: new Date().toISOString()
-    };
-    
-    notes.unshift(note); // Agregar al principio del array para que aparezca primero
-    localStorage.setItem('notes', JSON.stringify(notes));
-    console.log('Nota guardada. Total notas:', notes.length);
-    
-    textarea.value = '';
-    showNotes();
-    showToast('Nota guardada');
-}
-
-// Eliminar nota
-function deleteNote(index) {
-    notes.splice(index, 1);
-    localStorage.setItem('notes', JSON.stringify(notes));
-    console.log('Nota eliminada. Total notas:', notes.length);
-    showNotes();
-    showToast('Nota eliminada');
 }
 
 // Mostrar/ocultar favoritos
@@ -583,56 +644,6 @@ function showFavorites() {
     `).join('');
 }
 
-// Agregar a favoritos
-function addToFavorites(verseNumber, verseText) {
-    const favorite = {
-        id: Date.now().toString(),
-        book: currentBook,
-        chapter: currentChapter,
-        verse: verseNumber,
-        text: verseText
-    };
-    
-    favorites.push(favorite);
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-    
-    // Actualizar el ícono del botón
-    const button = document.querySelector(`.verse-container:nth-child(${verseNumber}) .favorite-button i`);
-    if (button) {
-        button.textContent = 'favorite';
-        button.parentElement.classList.add('active');
-    }
-    
-    // Actualizar la lista de favoritos si el panel está abierto
-    const favoritesPanel = document.getElementById('favorites-panel');
-    if (favoritesPanel.classList.contains('open')) {
-        showFavorites();
-    }
-    
-    showToast('Versículo agregado a favoritos');
-}
-
-// Eliminar de favoritos
-function removeFavorite(id) {
-    favorites = favorites.filter(fav => fav.id !== id);
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-    
-    // Actualizar la lista de favoritos
-    showFavorites();
-    
-    // Actualizar el ícono si el versículo está visible
-    const verse = favorites.find(fav => fav.id === id);
-    if (verse && verse.book === currentBook && verse.chapter === currentChapter) {
-        const button = document.querySelector(`.verse-container:nth-child(${verse.verse}) .favorite-button i`);
-        if (button) {
-            button.textContent = 'favorite_border';
-            button.parentElement.classList.remove('active');
-        }
-    }
-    
-    showToast('Versículo eliminado de favoritos');
-}
-
 // Comprobar si un versículo es favorito
 function isFavorite(book, chapter, verse) {
     return favorites.some(fav => fav.book === book && fav.chapter === chapter && fav.verse === verse);
@@ -654,6 +665,63 @@ function showToast(message) {
             }, 300);
         }, 2000);
     }, 100);
+}
+
+// Alternar modo oscuro
+function toggleDarkMode() {
+    isDarkMode = !isDarkMode;
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', isDarkMode);
+    
+    const darkModeIcon = document.querySelector('button[onclick="toggleDarkMode()"] i');
+    if (darkModeIcon) {
+        darkModeIcon.textContent = isDarkMode ? 'light_mode' : 'dark_mode';
+    }
+}
+
+// Cargar preferencia de modo oscuro
+function loadDarkModePreference() {
+    if (localStorage.getItem('darkMode') === 'true') {
+        isDarkMode = true;
+        document.body.classList.add('dark-mode');
+    }
+}
+
+// Actualizar UI
+function updateUI() {
+    const loginButton = document.querySelector('button[onclick="login()"]');
+    const logoutButton = document.querySelector('button[onclick="logout()"]');
+    
+    if (currentUser) {
+        loginButton.style.display = 'none';
+        logoutButton.style.display = 'block';
+    } else {
+        loginButton.style.display = 'block';
+        logoutButton.style.display = 'none';
+    }
+}
+
+// Iniciar sesión
+async function login() {
+    try {
+        const provider = new auth.GoogleAuthProvider();
+        const result = await auth.signInWithPopup(provider);
+        console.log('Usuario autenticado:', result.user);
+    } catch (error) {
+        console.error('Error al iniciar sesión:', error);
+        showToast('Error al iniciar sesión');
+    }
+}
+
+// Cerrar sesión
+async function logout() {
+    try {
+        await auth.signOut();
+        console.log('Usuario cerró sesión');
+    } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+        showToast('Error al cerrar sesión');
+    }
 }
 
 // Inicializar la aplicación
