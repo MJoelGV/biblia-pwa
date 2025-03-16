@@ -30,11 +30,11 @@ let bibleStructure = {
 // Inicializar la aplicación
 async function initializeApp() {
     console.log('Iniciando la aplicación...');
-    await loadBible();
+    loadSavedData(); // Primero cargamos los datos guardados
+    await loadBible(); // Esperamos a que la Biblia se cargue
     showProverbOfDay();
     setupSearch();
     loadDarkModePreference();
-    loadSavedData();
 }
 
 // Cargar la Biblia
@@ -57,6 +57,7 @@ async function loadBible() {
             );
         }
         
+        console.log('Biblia cargada correctamente');
         return true;
     } catch (error) {
         console.error('Error al cargar la Biblia:', error);
@@ -69,7 +70,42 @@ async function loadBible() {
                 </button>
             </div>
         `;
+        showToast('Error al cargar la Biblia. Por favor, recarga la página.');
         return false;
+    }
+}
+
+// Cargar datos guardados
+function loadSavedData() {
+    console.log('Cargando datos guardados...');
+    
+    // Cargar favoritos
+    const savedFavorites = localStorage.getItem('favorites');
+    if (savedFavorites) {
+        try {
+            favorites = JSON.parse(savedFavorites);
+            console.log('Favoritos cargados:', favorites.length);
+        } catch (e) {
+            favorites = [];
+            localStorage.setItem('favorites', '[]');
+        }
+    }
+
+    // Cargar notas
+    const savedNotes = localStorage.getItem('notes');
+    if (savedNotes) {
+        try {
+            notes = JSON.parse(savedNotes);
+            console.log('Notas cargadas:', notes.length);
+        } catch (e) {
+            notes = [];
+            localStorage.setItem('notes', '[]');
+        }
+    }
+    
+    // Cargar modo oscuro
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
     }
 }
 
@@ -396,11 +432,14 @@ function changeChapter(delta) {
 
 // Cargar datos guardados
 function loadSavedData() {
+    console.log('Cargando datos guardados...');
+    
     // Cargar favoritos
     const savedFavorites = localStorage.getItem('favorites');
     if (savedFavorites) {
         try {
             favorites = JSON.parse(savedFavorites);
+            console.log('Favoritos cargados:', favorites.length);
         } catch (e) {
             favorites = [];
             localStorage.setItem('favorites', '[]');
@@ -412,6 +451,7 @@ function loadSavedData() {
     if (savedNotes) {
         try {
             notes = JSON.parse(savedNotes);
+            console.log('Notas cargadas:', notes.length);
         } catch (e) {
             notes = [];
             localStorage.setItem('notes', '[]');
@@ -448,6 +488,7 @@ function toggleNotes() {
 
 // Mostrar notas
 function showNotes() {
+    console.log('Mostrando notas:', notes.length);
     const notesList = document.querySelector('.notes-list');
     if (!notesList) return;
 
@@ -484,8 +525,9 @@ function saveNote() {
         date: new Date().toISOString()
     };
     
-    notes.push(note);
+    notes.unshift(note); // Agregar al principio del array para que aparezca primero
     localStorage.setItem('notes', JSON.stringify(notes));
+    console.log('Nota guardada. Total notas:', notes.length);
     
     textarea.value = '';
     showNotes();
@@ -496,6 +538,7 @@ function saveNote() {
 function deleteNote(index) {
     notes.splice(index, 1);
     localStorage.setItem('notes', JSON.stringify(notes));
+    console.log('Nota eliminada. Total notas:', notes.length);
     showNotes();
     showToast('Nota eliminada');
 }
