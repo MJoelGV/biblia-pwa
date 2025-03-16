@@ -505,15 +505,29 @@ function showFavorites() {
     const favoritesList = document.querySelector('.favorites-list');
     if (!favoritesList) return;
     
-    favoritesList.innerHTML = favorites.length ? favorites.map(fav => `
+    if (favorites.length === 0) {
+        favoritesList.innerHTML = '<p class="favorites-empty">No tienes versículos favoritos guardados</p>';
+        return;
+    }
+
+    favoritesList.innerHTML = favorites.map(fav => `
         <div class="favorite-item">
-            <div class="favorite-text">${fav.text}</div>
-            <div class="favorite-reference">Proverbios ${fav.chapter}:${fav.verse}</div>
-            <button onclick="removeFavorite('${fav.id}')" class="remove-favorite">
-                <i class="material-icons">delete</i>
-            </button>
+            <div class="favorite-content">
+                <div class="favorite-text">${fav.text}</div>
+                <div class="favorite-reference">
+                    ${fav.book} ${fav.chapter}:${fav.verse}
+                </div>
+            </div>
+            <div class="favorite-actions">
+                <button onclick="goToVerse('${fav.book}', ${fav.chapter}, ${fav.verse})" class="go-to-verse">
+                    <i class="material-icons">menu_book</i>
+                </button>
+                <button onclick="removeFavorite('${fav.id}')" class="remove-favorite">
+                    <i class="material-icons">delete</i>
+                </button>
+            </div>
         </div>
-    `).join('') : '<p class="favorites-empty">No tienes versículos favoritos guardados</p>';
+    `).join('');
 }
 
 // Agregar a favoritos
