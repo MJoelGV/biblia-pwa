@@ -315,6 +315,9 @@ function showProverbOfDay() {
                 <i class="material-icons">menu_book</i>
                 Leer más
             </button>
+            <div class="bible-title">
+                Biblia de Poder y Milagros
+            </div>
         `;
     }
 }

@@ -710,6 +710,27 @@ body.dark-mode {
     background-color: #2d2d2d;
 }
 
+.bible-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.5rem;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-top: 2rem;
+    opacity: 0.9;
+    animation: fadeInUp 1s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 0.9;
+        transform: translateY(0);
+    }
+}
+
 @media (max-width: 600px) {
     main {
         margin-top: 100px;
